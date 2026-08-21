@@ -1,3 +1,13 @@
+const CATEGORY_ICONS = {
+  backswing: "🏌️",
+  balans: "⚖️",
+  "follow-through": "🎯",
+};
+
+function iconFor(category) {
+  return CATEGORY_ICONS[category?.toLowerCase()] ?? "💡";
+}
+
 export default function CoachingTips({ tips, hasVideo }) {
   if (!hasVideo) {
     return (
@@ -19,9 +29,12 @@ export default function CoachingTips({ tips, hasVideo }) {
   return (
     <ul className="tips-list">
       {tips.map((tip, index) => (
-        <li className="tip-card" key={index}>
-          <span className="tip-category">{tip.category}</span>
-          <p>{tip.tip}</p>
+        <li className="tip-card" key={index} style={{ animationDelay: `${index * 80}ms` }}>
+          <span className="tip-icon">{iconFor(tip.category)}</span>
+          <div>
+            <span className="tip-category">{tip.category}</span>
+            <p>{tip.tip}</p>
+          </div>
         </li>
       ))}
     </ul>

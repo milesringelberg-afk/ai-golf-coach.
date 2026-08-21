@@ -1,12 +1,18 @@
 :root {
-  --bg: #0f1712;
-  --panel: #16211a;
-  --panel-border: #24352a;
+  --bg: #0b120d;
+  --bg-radial: #16241a;
+  --panel: #141e17;
+  --panel-border: #253326;
+  --panel-border-soft: #1c2820;
   --accent: #4ade80;
+  --accent-soft: #86efac;
   --accent-dark: #22c55e;
-  --text: #eef4ef;
-  --text-muted: #9fb3a6;
+  --text: #f2f7f3;
+  --text-muted: #93a89b;
   --danger: #f87171;
+  --danger-soft: rgba(248, 113, 113, 0.12);
+  --font-display: "Sora", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
   color-scheme: dark;
 }
 
@@ -16,8 +22,16 @@
 
 body {
   margin: 0;
-  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
-  background: radial-gradient(circle at top, #16241a 0%, var(--bg) 60%);
+  font-family: var(--font-body);
+  background:
+    radial-gradient(1200px 600px at 15% -10%, rgba(74, 222, 128, 0.10), transparent 55%),
+    radial-gradient(900px 500px at 100% 0%, rgba(74, 222, 128, 0.06), transparent 50%),
+    var(--bg);
   color: var(--text);
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
 }

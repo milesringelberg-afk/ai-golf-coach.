@@ -10,10 +10,15 @@ export default function App() {
     <div className="app">
       <header className="app-header">
         <div className="app-header-inner">
-          <span className="app-logo">⛳</span>
-          <div>
-            <h1>AI Golf Coach</h1>
-            <p>Upload je swing en ontvang persoonlijke coaching tips</p>
+          <div className="app-brand">
+            <span className="app-logo">⛳</span>
+            <div>
+              <div className="app-title-row">
+                <h1>AI Golf Coach</h1>
+                <span className="app-badge">Concept</span>
+              </div>
+              <p>Upload je swing en ontvang persoonlijke coaching tips</p>
+            </div>
           </div>
         </div>
       </header>
@@ -28,7 +33,7 @@ export default function App() {
       </main>
 
       <footer className="app-footer">
-        <p>AI Golf Coach — swing analyse, mock-up UI</p>
+        <p>AI Golf Coach — swing-analyse met live lichaamsherkenning</p>
       </footer>
     </div>
   );

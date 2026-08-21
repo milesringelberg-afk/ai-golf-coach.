@@ -69,9 +69,11 @@ export default function VideoUploader({ onUploaded }) {
           hidden
           onChange={(e) => uploadFile(e.target.files?.[0])}
         />
-        <div className="dropzone-icon">🎥</div>
+        <div className="dropzone-icon-ring">
+          <span className="dropzone-icon">{isUploading ? "⏳" : "🎥"}</span>
+        </div>
         {isUploading ? (
-          <p>Bezig met uploaden van "{fileName}"…</p>
+          <p className="dropzone-title">Bezig met uploaden van "{fileName}"…</p>
         ) : (
           <>
             <p className="dropzone-title">Sleep je video hierheen of klik om te selecteren</p>
@@ -79,9 +81,15 @@ export default function VideoUploader({ onUploaded }) {
           </>
         )}
       </div>
-      {error && <p className="error-message">{error}</p>}
+      {error && (
+        <p className="alert-chip alert-chip-error">
+          <span>⚠️</span> {error}
+        </p>
+      )}
       {fileName && !isUploading && !error && (
-        <p className="upload-success">✅ "{fileName}" geüpload</p>
+        <p className="alert-chip alert-chip-success">
+          <span>✅</span> "{fileName}" geüpload
+        </p>
       )}
     </div>
   );
