@@ -1,0 +1,15 @@
+# Dit .gitignore-bestand hoort bij de AI Golf Coach git-repo.
+# De map bevat ook een los, ongerelateerd project (Grand Café 't Hoofd) dat
+# hier bewust buiten deze repo wordt gehouden.
+index.html
+package.json
+vite.config.js
+src/
+.claude/
+
+# Algemeen
+node_modules/
+frontend/dist/
+backend/uploads/*
+!backend/uploads/.gitkeep
+*.log
