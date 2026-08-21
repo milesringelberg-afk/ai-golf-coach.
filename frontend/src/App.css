@@ -171,6 +171,66 @@
   cursor: pointer;
 }
 
+.swing-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.swing-stat {
+  background: rgba(74, 222, 128, 0.07);
+  border: 1px solid var(--panel-border);
+  border-radius: 10px;
+  padding: 10px 8px;
+  text-align: center;
+}
+
+.swing-stat-value {
+  display: block;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.swing-stat-label {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.phase-markers {
+  margin-top: 14px;
+}
+
+.phase-markers-title {
+  margin: 0 0 8px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.phase-markers-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.phase-button {
+  background: transparent;
+  border: 1px solid var(--accent-dark);
+  color: var(--accent);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.phase-button:hover {
+  background: rgba(74, 222, 128, 0.12);
+}
+
 /* Tips */
 .tips-list {
   list-style: none;
