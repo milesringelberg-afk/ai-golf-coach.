@@ -8,24 +8,27 @@ import {
   detectPhases,
 } from "../lib/swingMetrics.js";
 
-const PHASE_LABELS = {
-  address: "Address",
-  top: "Top backswing",
-  impact: "Impact",
-  finish: "Finish",
-};
+function formatTime(t) {
+  if (!isFinite(t) || t < 0) return "0:00";
+  const m = Math.floor(t / 60);
+  const s = Math.floor(t % 60)
+    .toString()
+    .padStart(2, "0");
+  return `${m}:${s}`;
+}
 
-export default function VideoPlayer({ videoUrl }) {
-  const videoRef = useRef(null);
+export default function VideoPlayer({ videoUrl, videoRef, onLiveMetrics, onPhases }) {
   const canvasRef = useRef(null);
   const [overlayEnabled, setOverlayEnabled] = useState(true);
   const [modelStatus, setModelStatus] = useState("idle"); // idle | loading | ready | error
-  const [liveMetrics, setLiveMetrics] = useState(null);
-  const [phases, setPhases] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
 
+  // Pose-detectie: hoeken, snelheid en fases per frame berekenen.
   useEffect(() => {
-    setLiveMetrics(null);
-    setPhases(null);
+    onLiveMetrics(null);
+    onPhases(null);
 
     if (!videoUrl || !overlayEnabled) return;
 
@@ -39,7 +42,7 @@ export default function VideoPlayer({ videoUrl }) {
 
     function handleEnded() {
       const detected = detectPhases(framesRef.current);
-      if (detected) setPhases(detected);
+      if (detected) onPhases(detected);
     }
 
     async function start() {
@@ -111,7 +114,7 @@ export default function VideoPlayer({ videoUrl }) {
             const now = performance.now();
             if (now - lastUiUpdateRef.current > 120) {
               lastUiUpdateRef.current = now;
-              setLiveMetrics(computeLiveMetrics(baselineRef.current, frameAngles));
+              onLiveMetrics(computeLiveMetrics(baselineRef.current, frameAngles));
             }
           }
         }
@@ -143,7 +146,38 @@ export default function VideoPlayer({ videoUrl }) {
         canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [videoUrl, overlayEnabled]);
+
+  // Custom tijdsbalk: play-state en voortgang bijhouden.
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v || !videoUrl) return;
+
+    function onTime() {
+      setCurrentTime(v.currentTime);
+    }
+    function onLoaded() {
+      setDuration(v.duration || 0);
+    }
+    function onPlay() {
+      setIsPlaying(true);
+    }
+    function onPause() {
+      setIsPlaying(false);
+    }
+
+    v.addEventListener("timeupdate", onTime);
+    v.addEventListener("loadedmetadata", onLoaded);
+    v.addEventListener("play", onPlay);
+    v.addEventListener("pause", onPause);
+    return () => {
+      v.removeEventListener("timeupdate", onTime);
+      v.removeEventListener("loadedmetadata", onLoaded);
+      v.removeEventListener("play", onPlay);
+      v.removeEventListener("pause", onPause);
+    };
+  }, [videoUrl, videoRef]);
 
   if (!videoUrl) {
     return (
@@ -154,12 +188,21 @@ export default function VideoPlayer({ videoUrl }) {
     );
   }
 
-  function seekTo(seconds) {
+  function togglePlay() {
     const v = videoRef.current;
     if (!v) return;
-    v.pause();
-    v.currentTime = seconds;
+    if (v.paused) v.play();
+    else v.pause();
   }
+
+  function handleScrub(e) {
+    const v = videoRef.current;
+    const value = Number(e.target.value);
+    if (v) v.currentTime = value;
+    setCurrentTime(value);
+  }
+
+  const progress = duration ? (currentTime / duration) * 100 : 0;
 
   return (
     <div>
@@ -168,13 +211,37 @@ export default function VideoPlayer({ videoUrl }) {
           ref={videoRef}
           className="video-player"
           src={videoUrl}
-          controls
           playsInline
           key={videoUrl}
+          onClick={togglePlay}
         >
           Je browser ondersteunt geen video-weergave.
         </video>
         <canvas ref={canvasRef} className="pose-overlay-canvas" />
+      </div>
+
+      <div className="custom-controls">
+        <button
+          type="button"
+          className="play-btn"
+          onClick={togglePlay}
+          aria-label={isPlaying ? "Pauzeer" : "Speel af"}
+        >
+          {isPlaying ? "⏸" : "▶"}
+        </button>
+        <span className="time-display">
+          {formatTime(currentTime)} / {formatTime(duration)}
+        </span>
+        <input
+          type="range"
+          className="scrub-bar"
+          min={0}
+          max={duration || 0}
+          step={0.01}
+          value={currentTime}
+          onChange={handleScrub}
+          style={{ "--progress": `${progress}%` }}
+        />
       </div>
 
       <label className="overlay-toggle">
@@ -187,41 +254,6 @@ export default function VideoPlayer({ videoUrl }) {
         {modelStatus === "loading" && " — model laden…"}
         {modelStatus === "error" && " — analyse kon niet geladen worden"}
       </label>
-
-      {overlayEnabled && liveMetrics && (
-        <div className="swing-stats">
-          <div className="swing-stat">
-            <span className="swing-stat-value">{Math.round(liveMetrics.shoulderRotation)}°</span>
-            <span className="swing-stat-label">Schouderdraaiing</span>
-          </div>
-          <div className="swing-stat">
-            <span className="swing-stat-value">{Math.round(liveMetrics.hipRotation)}°</span>
-            <span className="swing-stat-label">Heupdraaiing</span>
-          </div>
-          <div className="swing-stat">
-            <span className="swing-stat-value">{Math.round(liveMetrics.xFactor)}°</span>
-            <span className="swing-stat-label">X-factor</span>
-          </div>
-        </div>
-      )}
-
-      {overlayEnabled && phases && (
-        <div className="phase-markers">
-          <p className="phase-markers-title">Herkende swingfases (klik om te bekijken):</p>
-          <div className="phase-markers-buttons">
-            {Object.entries(phases).map(([key, frame]) => (
-              <button
-                key={key}
-                type="button"
-                className="phase-button"
-                onClick={() => seekTo(frame.t)}
-              >
-                {PHASE_LABELS[key]}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
