@@ -610,6 +610,34 @@
   font-style: italic;
 }
 
+.deep-coach-section {
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px solid var(--glass-border-soft);
+}
+
+.deep-coach-btn {
+  margin-top: 12px;
+}
+
+.deep-coach-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.deep-coach-result {
+  margin-top: 4px;
+  padding: 16px 18px;
+  background: var(--glass-bg-soft);
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text);
+  white-space: pre-wrap;
+  animation: fade-in-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
 .stats-group-title {
   margin: 18px 0 10px;
   font-size: 0.78rem;

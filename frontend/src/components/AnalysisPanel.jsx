@@ -25,6 +25,11 @@ const TABS = [
   { id: "stats", label: "Stats", icon: "📊" },
 ];
 
+function simplifyPhases(phases) {
+  if (!phases) return null;
+  return Object.fromEntries(Object.entries(phases).map(([key, frame]) => [key, { t: frame.t }]));
+}
+
 export default function AnalysisPanel({
   hasVideo,
   coachingTips,
@@ -36,7 +41,35 @@ export default function AnalysisPanel({
   onToggleVoice,
 }) {
   const [activeTab, setActiveTab] = useState("analyse");
+  const [coachStatus, setCoachStatus] = useState("idle"); // idle | loading | done | error
+  const [coachResult, setCoachResult] = useState(null);
+  const [coachError, setCoachError] = useState(null);
   const postureHints = getPostureHints(addressPosture);
+
+  async function requestDeepAnalysis() {
+    setCoachStatus("loading");
+    setCoachError(null);
+    try {
+      const response = await fetch("/api/coach", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          addressPosture,
+          rotation: liveMetrics,
+          phases: simplifyPhases(phases),
+        }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data.error || "AI-analyse is mislukt.");
+      }
+      setCoachResult(data.analysis);
+      setCoachStatus("done");
+    } catch (err) {
+      setCoachError(err.message || "Er ging iets mis.");
+      setCoachStatus("error");
+    }
+  }
 
   if (!hasVideo) {
     return (
@@ -128,6 +161,44 @@ export default function AnalysisPanel({
                 AI automatisch de swingfases (address, top, impact, finish).
               </p>
             )}
+
+            <div className="deep-coach-section">
+              <p className="posture-section-title">Master PGA Coach (Claude API)</p>
+              {coachStatus === "idle" && (
+                <>
+                  <p className="tab-hint">
+                    Vraag een diepgaande analyse aan: root cause + drie oplossingsrichtingen
+                    (gevoel, hulpmiddel, mentale gedachte), gebaseerd op de gemeten hoeken hierboven.
+                  </p>
+                  <button
+                    type="button"
+                    className="phase-button deep-coach-btn"
+                    onClick={requestDeepAnalysis}
+                    disabled={!addressPosture && !liveMetrics}
+                  >
+                    🧠 Vraag diepgaande analyse aan
+                  </button>
+                </>
+              )}
+              {coachStatus === "loading" && (
+                <p className="tab-hint">De Master PGA Coach denkt na over je swing…</p>
+              )}
+              {coachStatus === "error" && (
+                <>
+                  <p className="alert-chip alert-chip-error">
+                    <span>⚠️</span> {coachError}
+                  </p>
+                  <button
+                    type="button"
+                    className="phase-button deep-coach-btn"
+                    onClick={requestDeepAnalysis}
+                  >
+                    Opnieuw proberen
+                  </button>
+                </>
+              )}
+              {coachStatus === "done" && <div className="deep-coach-result">{coachResult}</div>}
+            </div>
           </>
         )}
 
