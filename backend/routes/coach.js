@@ -3,7 +3,8 @@ import { getAnthropicClient } from "../lib/anthropicClient.js";
 
 const router = Router();
 
-const MODEL = "claude-opus-5";
+// Sonnet 5 i.p.v. Opus 5: iets minder krachtig, maar aanzienlijk goedkoper per analyse.
+const MODEL = "claude-sonnet-5";
 
 const SYSTEM_PROMPT = `Je bent een Master PGA Professional golfcoach. Je krijgt geen video te zien —
 alleen een paar geometrische cijfers (hoeken en timing), berekend uit lichaamshoudings-
