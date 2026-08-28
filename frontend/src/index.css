@@ -1,9 +1,13 @@
 :root {
-  --bg: #0b120d;
-  --bg-radial: #16241a;
+  --bg: #050706;
+  --bg-radial: #0f1712;
   --panel: #141e17;
   --panel-border: #253326;
   --panel-border-soft: #1c2820;
+  --glass-bg: rgba(255, 255, 255, 0.035);
+  --glass-bg-soft: rgba(255, 255, 255, 0.02);
+  --glass-border: rgba(255, 255, 255, 0.09);
+  --glass-border-soft: rgba(255, 255, 255, 0.06);
   --accent: #4ade80;
   --accent-soft: #86efac;
   --accent-dark: #22c55e;
@@ -24,8 +28,8 @@ body {
   margin: 0;
   font-family: var(--font-body);
   background:
-    radial-gradient(1200px 600px at 15% -10%, rgba(74, 222, 128, 0.10), transparent 55%),
-    radial-gradient(900px 500px at 100% 0%, rgba(74, 222, 128, 0.06), transparent 50%),
+    radial-gradient(1100px 550px at 12% -10%, rgba(74, 222, 128, 0.06), transparent 55%),
+    radial-gradient(800px 450px at 100% 0%, rgba(74, 222, 128, 0.035), transparent 50%),
     var(--bg);
   color: var(--text);
   min-height: 100vh;
