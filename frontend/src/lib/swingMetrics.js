@@ -5,6 +5,10 @@ const LEFT_WRIST = 15;
 const RIGHT_WRIST = 16;
 const LEFT_HIP = 23;
 const RIGHT_HIP = 24;
+const LEFT_KNEE = 25;
+const RIGHT_KNEE = 26;
+const LEFT_ANKLE = 27;
+const RIGHT_ANKLE = 28;
 
 // Hoek (in graden) van de lijn tussen twee punten t.o.v. horizontaal.
 // Camera-afstand-onafhankelijk, dus betrouwbaarder dan absolute snelheid.
@@ -14,6 +18,43 @@ function lineAngleDegrees(a, b) {
 
 function midpoint(a, b) {
   return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+}
+
+// Hoek (in graden) op punt b, gevormd door de lijnstukken b->a en b->c.
+function angleAtPoint(a, b, c) {
+  const v1 = { x: a.x - b.x, y: a.y - b.y };
+  const v2 = { x: c.x - b.x, y: c.y - b.y };
+  const mag1 = Math.hypot(v1.x, v1.y);
+  const mag2 = Math.hypot(v2.x, v2.y);
+  if (mag1 === 0 || mag2 === 0) return 0;
+  const cos = Math.min(1, Math.max(-1, (v1.x * v2.x + v1.y * v2.y) / (mag1 * mag2)));
+  return (Math.acos(cos) * 180) / Math.PI;
+}
+
+// Kniebuiging en rughoek bij de beginhouding (address), puur uit de
+// herkende lichaamspunten — geen AI-beoordeling, alleen geometrie.
+export function computeAddressPosture(landmarks) {
+  const leftKneeAngle = angleAtPoint(
+    landmarks[LEFT_HIP],
+    landmarks[LEFT_KNEE],
+    landmarks[LEFT_ANKLE]
+  );
+  const rightKneeAngle = angleAtPoint(
+    landmarks[RIGHT_HIP],
+    landmarks[RIGHT_KNEE],
+    landmarks[RIGHT_ANKLE]
+  );
+  // 180deg = kaarsrechte knie, dus "buiging" = afwijking daarvan.
+  const kneeFlex = 180 - (leftKneeAngle + rightKneeAngle) / 2;
+
+  const hipMid = midpoint(landmarks[LEFT_HIP], landmarks[RIGHT_HIP]);
+  const shoulderMid = midpoint(landmarks[LEFT_SHOULDER], landmarks[RIGHT_SHOULDER]);
+  const dx = shoulderMid.x - hipMid.x;
+  const dy = shoulderMid.y - hipMid.y;
+  // Hoek van de romp t.o.v. verticaal (rechtop staan = 0 graden).
+  const spineAngle = (Math.atan2(Math.abs(dx), Math.abs(dy)) * 180) / Math.PI;
+
+  return { kneeFlex, spineAngle };
 }
 
 // Kleinste verschil tussen twee hoeken (in graden), rekening houdend met de 360°-wraparound.

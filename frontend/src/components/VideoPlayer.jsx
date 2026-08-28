@@ -5,6 +5,7 @@ import {
   computeFrameAngles,
   computeLiveMetrics,
   computeWristSpeed,
+  computeAddressPosture,
   detectPhases,
 } from "../lib/swingMetrics.js";
 
@@ -17,7 +18,14 @@ function formatTime(t) {
   return `${m}:${s}`;
 }
 
-export default function VideoPlayer({ videoUrl, videoRef, isAnalyzing, onLiveMetrics, onPhases }) {
+export default function VideoPlayer({
+  videoUrl,
+  videoRef,
+  isAnalyzing,
+  onLiveMetrics,
+  onPhases,
+  onAddressPosture,
+}) {
   const canvasRef = useRef(null);
   const [overlayEnabled, setOverlayEnabled] = useState(true);
   const [modelStatus, setModelStatus] = useState("idle"); // idle | loading | ready | error
@@ -29,6 +37,7 @@ export default function VideoPlayer({ videoUrl, videoRef, isAnalyzing, onLiveMet
   useEffect(() => {
     onLiveMetrics(null);
     onPhases(null);
+    onAddressPosture(null);
 
     if (!videoUrl || !overlayEnabled) return;
 
@@ -96,6 +105,8 @@ export default function VideoPlayer({ videoUrl, videoRef, isAnalyzing, onLiveMet
                 shoulderAngle: frameAngles.shoulderAngle,
                 hipAngle: frameAngles.hipAngle,
               };
+              // Allereerste gedetecteerde frame = address: kniebuiging/rughoek hier vastleggen.
+              onAddressPosture(computeAddressPosture(landmarks));
             }
 
             const prevFrame = framesRef.current[framesRef.current.length - 1];

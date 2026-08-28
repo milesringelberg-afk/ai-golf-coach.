@@ -22,6 +22,7 @@ export default function Dashboard({
   const videoRef = useRef(null);
   const [liveMetrics, setLiveMetrics] = useState(null);
   const [phases, setPhases] = useState(null);
+  const [addressPosture, setAddressPosture] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
 
@@ -67,6 +68,7 @@ export default function Dashboard({
             isAnalyzing={isAnalyzing}
             onLiveMetrics={setLiveMetrics}
             onPhases={setPhases}
+            onAddressPosture={setAddressPosture}
           />
         </section>
 
@@ -77,6 +79,7 @@ export default function Dashboard({
             coachingTips={coachingTips}
             liveMetrics={liveMetrics}
             phases={phases}
+            addressPosture={addressPosture}
             onSeek={seekTo}
             voiceEnabled={voiceEnabled}
             onToggleVoice={setVoiceEnabled}

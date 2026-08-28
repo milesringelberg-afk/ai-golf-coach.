@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { speak, isSpeechSupported } from "../lib/speech.js";
+import { getPostureHints } from "../lib/postureHints.js";
 
 const CATEGORY_ICONS = {
   backswing: "🏌️",
@@ -29,11 +30,13 @@ export default function AnalysisPanel({
   coachingTips,
   liveMetrics,
   phases,
+  addressPosture,
   onSeek,
   voiceEnabled,
   onToggleVoice,
 }) {
   const [activeTab, setActiveTab] = useState("analyse");
+  const postureHints = getPostureHints(addressPosture);
 
   if (!hasVideo) {
     return (
@@ -71,29 +74,62 @@ export default function AnalysisPanel({
       </div>
 
       <div className="tab-content" key={activeTab}>
-        {activeTab === "analyse" &&
-          (phases ? (
-            <>
-              <p className="tab-hint">Herkende swingfases — klik om dat moment te bekijken:</p>
-              <div className="phase-markers-buttons">
-                {Object.entries(phases).map(([key, frame]) => (
-                  <button
-                    key={key}
-                    type="button"
-                    className="phase-button"
-                    onClick={() => onSeek(frame.t)}
-                  >
-                    {PHASE_LABELS[key]}
-                  </button>
-                ))}
-              </div>
-            </>
-          ) : (
-            <p className="tab-hint">
-              Speel de video eenmaal volledig af met "Lichaamshouding tonen" aan — dan herkent de
-              AI automatisch de swingfases (address, top, impact, finish).
-            </p>
-          ))}
+        {activeTab === "analyse" && (
+          <>
+            <div className="posture-section">
+              <p className="posture-section-title">Beginhouding (address)</p>
+              {addressPosture ? (
+                postureHints.length > 0 ? (
+                  <ul className="posture-hints">
+                    {postureHints.map((hint) => (
+                      <li className="posture-hint" key={hint.label}>
+                        <span className="posture-hint-label">{hint.label}</span>
+                        <p>{hint.text}</p>
+                        <p className="posture-hint-drill">{hint.drill}</p>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="tab-hint">
+                    Sterke basis — je kniebuiging en rughoek bij address vallen binnen een gezonde
+                    richtlijn.
+                  </p>
+                )
+              ) : (
+                <p className="tab-hint">
+                  Speel de video af met "Lichaamshouding tonen" aan — de eerste seconde wordt
+                  gebruikt als je address-positie.
+                </p>
+              )}
+              <p className="posture-disclaimer">
+                Vuistregel op basis van eenvoudige hoekmeting, geen gepersonaliseerd coach-advies.
+              </p>
+            </div>
+
+            {phases ? (
+              <>
+                <p className="tab-hint">Herkende swingfases — klik om dat moment te bekijken:</p>
+                <div className="phase-markers-buttons">
+                  {Object.entries(phases).map(([key, frame]) => (
+                    <button
+                      key={key}
+                      type="button"
+                      className="phase-button"
+                      onClick={() => onSeek(frame.t)}
+                    >
+                      {PHASE_LABELS[key]}
+                    </button>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <p className="tab-hint">
+                Speel de video eenmaal volledig af met "Lichaamshouding tonen" aan — dan herkent de
+                AI automatisch de swingfases (address, top, impact, finish).
+              </p>
+            )}
+          </>
+        )}
 
         {activeTab === "verbeterpunten" &&
           (!coachingTips || coachingTips.length === 0 ? (
@@ -123,21 +159,49 @@ export default function AnalysisPanel({
           ))}
 
         {activeTab === "stats" &&
-          (liveMetrics ? (
-            <div className="swing-stats">
-              <div className="swing-stat">
-                <span className="swing-stat-value">{Math.round(liveMetrics.shoulderRotation)}°</span>
-                <span className="swing-stat-label">Schouderdraaiing</span>
-              </div>
-              <div className="swing-stat">
-                <span className="swing-stat-value">{Math.round(liveMetrics.hipRotation)}°</span>
-                <span className="swing-stat-label">Heupdraaiing</span>
-              </div>
-              <div className="swing-stat">
-                <span className="swing-stat-value">{Math.round(liveMetrics.xFactor)}°</span>
-                <span className="swing-stat-label">X-factor</span>
-              </div>
-            </div>
+          (liveMetrics || addressPosture ? (
+            <>
+              {addressPosture && (
+                <>
+                  <p className="stats-group-title">Bij address</p>
+                  <div className="swing-stats">
+                    <div className="swing-stat">
+                      <span className="swing-stat-value">
+                        {Math.round(addressPosture.kneeFlex)}°
+                      </span>
+                      <span className="swing-stat-label">Kniebuiging</span>
+                    </div>
+                    <div className="swing-stat">
+                      <span className="swing-stat-value">
+                        {Math.round(addressPosture.spineAngle)}°
+                      </span>
+                      <span className="swing-stat-label">Rughoek</span>
+                    </div>
+                  </div>
+                </>
+              )}
+              {liveMetrics && (
+                <>
+                  <p className="stats-group-title">Tijdens de swing</p>
+                  <div className="swing-stats">
+                    <div className="swing-stat">
+                      <span className="swing-stat-value">
+                        {Math.round(liveMetrics.shoulderRotation)}°
+                      </span>
+                      <span className="swing-stat-label">Schouderdraaiing</span>
+                    </div>
+                    <div className="swing-stat">
+                      <span className="swing-stat-value">{Math.round(liveMetrics.hipRotation)}°</span>
+                      <span className="swing-stat-label">Heupdraaiing</span>
+                    </div>
+                    <div className="swing-stat">
+                      <span className="swing-stat-value">{Math.round(liveMetrics.xFactor)}°</span>
+                      <span className="swing-stat-label">X-factor</span>
+                    </div>
+                  </div>
+                </>
+              )}
+            </>
           ) : (
             <p className="tab-hint">
               Speel de video af met "Lichaamshouding tonen" aan om live statistieken te zien.
