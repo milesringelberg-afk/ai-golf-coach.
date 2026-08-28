@@ -4,6 +4,17 @@
   min-height: 100vh;
 }
 
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Header */
 .app-header {
   position: sticky;
@@ -163,18 +174,26 @@
   padding: 40px 16px;
   text-align: center;
   cursor: pointer;
-  transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+  transition: border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    background 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .dropzone:hover {
   border-color: var(--accent-dark);
   background: rgba(74, 222, 128, 0.05);
+  box-shadow: 0 0 0 1px rgba(74, 222, 128, 0.12), 0 8px 24px -12px rgba(74, 222, 128, 0.25);
+}
+
+.dropzone:active {
+  transform: scale(0.995);
 }
 
 .dropzone-active {
   border-color: var(--accent);
   background: rgba(74, 222, 128, 0.09);
-  transform: scale(1.01);
+  transform: scale(1.015);
+  box-shadow: 0 0 0 1px rgba(74, 222, 128, 0.2), 0 12px 32px -14px rgba(74, 222, 128, 0.35);
 }
 
 .dropzone-icon-ring {
@@ -187,6 +206,16 @@
   justify-content: center;
   background: var(--glass-bg-soft);
   border: 1px solid var(--glass-border);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background 0.25s ease;
+}
+
+.dropzone:hover .dropzone-icon-ring {
+  transform: scale(1.06);
+}
+
+.dropzone-active .dropzone-icon-ring {
+  transform: scale(1.1);
+  background: rgba(74, 222, 128, 0.14);
 }
 
 .dropzone-icon {
@@ -276,6 +305,11 @@
   font-size: 0.85rem;
   color: var(--text-muted);
   cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.overlay-toggle:hover {
+  color: var(--text);
 }
 
 .overlay-toggle input {
@@ -287,6 +321,7 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   margin-top: 16px;
+  animation: fade-in-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .swing-stat {
@@ -295,12 +330,14 @@
   border-radius: 14px;
   padding: 14px 8px;
   text-align: center;
-  transition: transform 0.15s ease, border-color 0.15s ease;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .swing-stat:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   border-color: var(--accent-dark);
+  box-shadow: 0 10px 24px -14px rgba(74, 222, 128, 0.4);
 }
 
 .swing-stat-value {
@@ -320,6 +357,7 @@
 
 .phase-markers {
   margin-top: 16px;
+  animation: fade-in-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .phase-markers-title {
@@ -343,12 +381,18 @@
   font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.15s ease, transform 0.15s ease;
+  transition: background 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .phase-button:hover {
   background: rgba(74, 222, 128, 0.14);
   transform: translateY(-1px);
+  box-shadow: 0 6px 18px -8px rgba(74, 222, 128, 0.5);
+}
+
+.phase-button:active {
+  transform: translateY(0);
 }
 
 /* Tips */
@@ -370,23 +414,15 @@
   border-left: 3px solid var(--accent);
   border-radius: 14px;
   padding: 16px 18px;
-  animation: tip-in 0.4s ease both;
-  transition: transform 0.15s ease;
+  animation: fade-in-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .tip-card:hover {
-  transform: translateX(2px);
-}
-
-@keyframes tip-in {
-  from {
-    opacity: 0;
-    transform: translateX(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  transform: translateY(-2px);
+  border-color: var(--glass-border);
+  box-shadow: 0 12px 28px -18px rgba(74, 222, 128, 0.45);
 }
 
 .tip-icon {
