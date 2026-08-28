@@ -1,22 +1,22 @@
 :root {
-  --bg: #050706;
-  --bg-radial: #0f1712;
-  --panel: #141e17;
-  --panel-border: #253326;
-  --panel-border-soft: #1c2820;
-  --glass-bg: rgba(255, 255, 255, 0.035);
-  --glass-bg-soft: rgba(255, 255, 255, 0.02);
-  --glass-border: rgba(255, 255, 255, 0.09);
-  --glass-border-soft: rgba(255, 255, 255, 0.06);
-  --accent: #4ade80;
-  --accent-soft: #86efac;
-  --accent-dark: #22c55e;
-  --text: #f2f7f3;
-  --text-muted: #93a89b;
-  --danger: #f87171;
-  --danger-soft: rgba(248, 113, 113, 0.12);
+  --bg: #09090b;
+  --bg-elevated: #101013;
+  --glass-bg: rgba(255, 255, 255, 0.032);
+  --glass-bg-soft: rgba(255, 255, 255, 0.018);
+  --glass-bg-strong: rgba(255, 255, 255, 0.055);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-soft: rgba(255, 255, 255, 0.05);
+  --accent: #ccff00;
+  --accent-dim: rgba(204, 255, 0, 0.12);
+  --accent-dim-strong: rgba(204, 255, 0, 0.22);
+  --accent-ink: #09090b;
+  --text: #fafafa;
+  --text-muted: #8b8b93;
+  --danger: #ff6b6b;
+  --danger-dim: rgba(255, 107, 107, 0.12);
   --font-display: "Sora", "Segoe UI", system-ui, sans-serif;
   --font-body: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
   color-scheme: dark;
 }
 
@@ -28,14 +28,32 @@ body {
   margin: 0;
   font-family: var(--font-body);
   background:
-    radial-gradient(1100px 550px at 12% -10%, rgba(74, 222, 128, 0.06), transparent 55%),
-    radial-gradient(800px 450px at 100% 0%, rgba(74, 222, 128, 0.035), transparent 50%),
+    radial-gradient(900px 480px at 8% -8%, rgba(204, 255, 0, 0.05), transparent 60%),
+    radial-gradient(700px 400px at 100% 0%, rgba(204, 255, 0, 0.025), transparent 55%),
     var(--bg);
+  background-attachment: fixed;
   color: var(--text);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   font-family: var(--font-display);
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

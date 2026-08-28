@@ -90,13 +90,13 @@ export default function VideoPlayer({
           const landmarks = result.landmarks[0];
           if (landmarks) {
             drawingUtils.drawConnectors(landmarks, PoseLandmarker.POSE_CONNECTIONS, {
-              color: "#4ade80",
+              color: "#ccff00",
               lineWidth: 3,
             });
             drawingUtils.drawLandmarks(landmarks, {
               radius: 3,
-              color: "#eef4ef",
-              fillColor: "#4ade80",
+              color: "#fafafa",
+              fillColor: "#ccff00",
             });
 
             const frameAngles = computeFrameAngles(landmarks);

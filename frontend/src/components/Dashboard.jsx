@@ -1,4 +1,3 @@
-import { useRef, useState } from "react";
 import VideoUploader from "./VideoUploader.jsx";
 import VideoPlayer from "./VideoPlayer.jsx";
 import AnalysisPanel from "./AnalysisPanel.jsx";
@@ -14,18 +13,22 @@ function StepHeading({ step, children }) {
 }
 
 export default function Dashboard({
+  videoRef,
   videoUrl,
   setVideoUrl,
   coachingTips,
   setCoachingTips,
+  liveMetrics,
+  setLiveMetrics,
+  phases,
+  setPhases,
+  addressPosture,
+  setAddressPosture,
+  isAnalyzing,
+  setIsAnalyzing,
+  voiceEnabled,
+  setVoiceEnabled,
 }) {
-  const videoRef = useRef(null);
-  const [liveMetrics, setLiveMetrics] = useState(null);
-  const [phases, setPhases] = useState(null);
-  const [addressPosture, setAddressPosture] = useState(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [voiceEnabled, setVoiceEnabled] = useState(true);
-
   function seekTo(seconds) {
     const v = videoRef.current;
     if (!v) return;

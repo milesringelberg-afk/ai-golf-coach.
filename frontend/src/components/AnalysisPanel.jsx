@@ -19,10 +19,10 @@ const PHASE_LABELS = {
   finish: "Finish",
 };
 
+// De losse Stats-tab is verhuisd naar de eigen "Stats"-weergave in de navigatie.
 const TABS = [
   { id: "analyse", label: "AI Analyse", icon: "🧠" },
   { id: "verbeterpunten", label: "Verbeterpunten", icon: "💡" },
-  { id: "stats", label: "Stats", icon: "📊" },
 ];
 
 function simplifyPhases(phases) {
@@ -229,55 +229,6 @@ export default function AnalysisPanel({
             </ul>
           ))}
 
-        {activeTab === "stats" &&
-          (liveMetrics || addressPosture ? (
-            <>
-              {addressPosture && (
-                <>
-                  <p className="stats-group-title">Bij address</p>
-                  <div className="swing-stats">
-                    <div className="swing-stat">
-                      <span className="swing-stat-value">
-                        {Math.round(addressPosture.kneeFlex)}°
-                      </span>
-                      <span className="swing-stat-label">Kniebuiging</span>
-                    </div>
-                    <div className="swing-stat">
-                      <span className="swing-stat-value">
-                        {Math.round(addressPosture.spineAngle)}°
-                      </span>
-                      <span className="swing-stat-label">Rughoek</span>
-                    </div>
-                  </div>
-                </>
-              )}
-              {liveMetrics && (
-                <>
-                  <p className="stats-group-title">Tijdens de swing</p>
-                  <div className="swing-stats">
-                    <div className="swing-stat">
-                      <span className="swing-stat-value">
-                        {Math.round(liveMetrics.shoulderRotation)}°
-                      </span>
-                      <span className="swing-stat-label">Schouderdraaiing</span>
-                    </div>
-                    <div className="swing-stat">
-                      <span className="swing-stat-value">{Math.round(liveMetrics.hipRotation)}°</span>
-                      <span className="swing-stat-label">Heupdraaiing</span>
-                    </div>
-                    <div className="swing-stat">
-                      <span className="swing-stat-value">{Math.round(liveMetrics.xFactor)}°</span>
-                      <span className="swing-stat-label">X-factor</span>
-                    </div>
-                  </div>
-                </>
-              )}
-            </>
-          ) : (
-            <p className="tab-hint">
-              Speel de video af met "Lichaamshouding tonen" aan om live statistieken te zien.
-            </p>
-          ))}
       </div>
     </div>
   );
