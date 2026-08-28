@@ -1,6 +1,11 @@
 import { useRef, useState } from "react";
 
-export default function VideoUploader({ onUploaded }) {
+// Houdt het scan-effect minimaal zo lang zichtbaar, ook al is de (mock)
+// analyse vrijwel instant. Zodra hier echte, langduriger AI-verwerking
+// voor in de plaats komt, mag dit minimum eruit.
+const MIN_ANALYZING_MS = 1800;
+
+export default function VideoUploader({ onVideoSelected, onUploaded, onUploadFailed }) {
   const inputRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -17,7 +22,9 @@ export default function VideoUploader({ onUploaded }) {
     setError(null);
     setIsUploading(true);
     setFileName(file.name);
+    onVideoSelected(URL.createObjectURL(file));
 
+    const startedAt = performance.now();
     const formData = new FormData();
     formData.append("video", file);
 
@@ -33,9 +40,16 @@ export default function VideoUploader({ onUploaded }) {
       }
 
       const data = await response.json();
+
+      const elapsed = performance.now() - startedAt;
+      if (elapsed < MIN_ANALYZING_MS) {
+        await new Promise((resolve) => setTimeout(resolve, MIN_ANALYZING_MS - elapsed));
+      }
+
       onUploaded({ url: data.file.url, tips: data.coachingTips });
     } catch (err) {
       setError(err.message || "Er ging iets mis bij het uploaden.");
+      onUploadFailed();
     } finally {
       setIsUploading(false);
     }

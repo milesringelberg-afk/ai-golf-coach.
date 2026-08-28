@@ -21,6 +21,7 @@ export default function Dashboard({
   const videoRef = useRef(null);
   const [liveMetrics, setLiveMetrics] = useState(null);
   const [phases, setPhases] = useState(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   function seekTo(seconds) {
     const v = videoRef.current;
@@ -34,9 +35,19 @@ export default function Dashboard({
       <section className="panel panel-upload">
         <StepHeading step={1}>Swing uploaden</StepHeading>
         <VideoUploader
+          onVideoSelected={(previewUrl) => {
+            setVideoUrl(previewUrl);
+            setCoachingTips([]);
+            setIsAnalyzing(true);
+          }}
           onUploaded={({ url, tips }) => {
             setVideoUrl(url);
             setCoachingTips(tips);
+            setIsAnalyzing(false);
+          }}
+          onUploadFailed={() => {
+            setVideoUrl(null);
+            setIsAnalyzing(false);
           }}
         />
       </section>
@@ -47,6 +58,7 @@ export default function Dashboard({
           <VideoPlayer
             videoUrl={videoUrl}
             videoRef={videoRef}
+            isAnalyzing={isAnalyzing}
             onLiveMetrics={setLiveMetrics}
             onPhases={setPhases}
           />

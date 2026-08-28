@@ -17,7 +17,7 @@ function formatTime(t) {
   return `${m}:${s}`;
 }
 
-export default function VideoPlayer({ videoUrl, videoRef, onLiveMetrics, onPhases }) {
+export default function VideoPlayer({ videoUrl, videoRef, isAnalyzing, onLiveMetrics, onPhases }) {
   const canvasRef = useRef(null);
   const [overlayEnabled, setOverlayEnabled] = useState(true);
   const [modelStatus, setModelStatus] = useState("idle"); // idle | loading | ready | error
@@ -218,6 +218,12 @@ export default function VideoPlayer({ videoUrl, videoRef, onLiveMetrics, onPhase
           Je browser ondersteunt geen video-weergave.
         </video>
         <canvas ref={canvasRef} className="pose-overlay-canvas" />
+        {isAnalyzing && (
+          <div className="scan-overlay">
+            <div className="scan-line" />
+            <span className="scan-text">AI analyseert swing-plane…</span>
+          </div>
+        )}
       </div>
 
       <div className="custom-controls">
