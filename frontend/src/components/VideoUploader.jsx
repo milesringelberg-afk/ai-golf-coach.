@@ -22,7 +22,9 @@ export default function VideoUploader({ onVideoSelected, onUploaded, onUploadFai
     setError(null);
     setIsUploading(true);
     setFileName(file.name);
-    onVideoSelected(URL.createObjectURL(file));
+    // Het File-object gaat mee omhoog zodat het later naar de database
+    // geüpload kan worden zonder de video opnieuw op te halen.
+    onVideoSelected(URL.createObjectURL(file), file);
 
     const startedAt = performance.now();
     const formData = new FormData();

@@ -1,6 +1,8 @@
 import VideoUploader from "./VideoUploader.jsx";
 import VideoPlayer from "./VideoPlayer.jsx";
 import AnalysisPanel from "./AnalysisPanel.jsx";
+import SaveSwingBar from "./SaveSwingBar.jsx";
+import { isSupabaseConfigured } from "../lib/supabase.js";
 import { speak, stopSpeaking } from "../lib/speech.js";
 
 function StepHeading({ step, children }) {
@@ -16,6 +18,8 @@ export default function Dashboard({
   videoRef,
   videoUrl,
   setVideoUrl,
+  videoFile,
+  setVideoFile,
   coachingTips,
   setCoachingTips,
   liveMetrics,
@@ -24,10 +28,14 @@ export default function Dashboard({
   setPhases,
   addressPosture,
   setAddressPosture,
+  coachText,
+  setCoachText,
   isAnalyzing,
   setIsAnalyzing,
   voiceEnabled,
   setVoiceEnabled,
+  session,
+  onNavigate,
 }) {
   function seekTo(seconds) {
     const v = videoRef.current;
@@ -41,10 +49,12 @@ export default function Dashboard({
       <section className="panel panel-upload">
         <StepHeading step={1}>Swing uploaden</StepHeading>
         <VideoUploader
-          onVideoSelected={(previewUrl) => {
+          onVideoSelected={(previewUrl, file) => {
             stopSpeaking();
             setVideoUrl(previewUrl);
+            setVideoFile(file);
             setCoachingTips([]);
+            setCoachText(null);
             setIsAnalyzing(true);
           }}
           onUploaded={({ url, tips }) => {
@@ -57,6 +67,7 @@ export default function Dashboard({
           }}
           onUploadFailed={() => {
             setVideoUrl(null);
+            setVideoFile(null);
             setIsAnalyzing(false);
           }}
         />
@@ -83,12 +94,26 @@ export default function Dashboard({
             liveMetrics={liveMetrics}
             phases={phases}
             addressPosture={addressPosture}
+            coachText={coachText}
+            setCoachText={setCoachText}
             onSeek={seekTo}
             voiceEnabled={voiceEnabled}
             onToggleVoice={setVoiceEnabled}
           />
         </section>
       </div>
+
+      {videoUrl && isSupabaseConfigured && (
+        <SaveSwingBar
+          session={session}
+          videoFile={videoFile}
+          addressPosture={addressPosture}
+          liveMetrics={liveMetrics}
+          phases={phases}
+          coachText={coachText}
+          onNavigate={onNavigate}
+        />
+      )}
     </div>
   );
 }

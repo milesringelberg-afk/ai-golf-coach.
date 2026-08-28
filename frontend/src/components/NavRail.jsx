@@ -1,10 +1,11 @@
 const NAV_ITEMS = [
   { id: "swing", label: "Swing", icon: "⛳", hint: "Upload & analyseer" },
   { id: "stats", label: "Stats", icon: "📊", hint: "Gemeten hoeken" },
+  { id: "history", label: "Historie", icon: "📁", hint: "Bewaarde swings" },
   { id: "info", label: "Info", icon: "ℹ️", hint: "Hoe het werkt" },
 ];
 
-export default function NavRail({ activeView, onNavigate, hasVideo }) {
+export default function NavRail({ activeView, onNavigate, hasVideo, session, onSignOut }) {
   return (
     <nav className="nav-rail" aria-label="Hoofdnavigatie">
       <div className="nav-brand">
@@ -33,9 +34,49 @@ export default function NavRail({ activeView, onNavigate, hasVideo }) {
             </button>
           </li>
         ))}
+
+        {/* Account krijgt op mobiel dezelfde plek in de balk als de rest. */}
+        <li className="nav-account-mobile">
+          <button
+            type="button"
+            className={`nav-item ${activeView === "account" ? "nav-item-active" : ""}`}
+            onClick={() => onNavigate("account")}
+            aria-current={activeView === "account" ? "page" : undefined}
+          >
+            <span className="nav-item-icon">{session ? "👤" : "🔑"}</span>
+            <span className="nav-item-body">
+              <span className="nav-item-label">Account</span>
+            </span>
+          </button>
+        </li>
       </ul>
 
-      <p className="nav-footer">Live lichaamsherkenning in je browser</p>
+      <div className="nav-account">
+        {session ? (
+          <>
+            <p className="nav-account-email" title={session.user.email}>
+              {session.user.email}
+            </p>
+            <button type="button" className="nav-signout" onClick={onSignOut}>
+              Uitloggen
+            </button>
+          </>
+        ) : (
+          <button
+            type="button"
+            className={`nav-item nav-item-login ${
+              activeView === "account" ? "nav-item-active" : ""
+            }`}
+            onClick={() => onNavigate("account")}
+          >
+            <span className="nav-item-icon">🔑</span>
+            <span className="nav-item-body">
+              <span className="nav-item-label">Inloggen</span>
+              <span className="nav-item-hint">Bewaar je swings</span>
+            </span>
+          </button>
+        )}
+      </div>
     </nav>
   );
 }

@@ -36,13 +36,14 @@ export default function AnalysisPanel({
   liveMetrics,
   phases,
   addressPosture,
+  coachText,
+  setCoachText,
   onSeek,
   voiceEnabled,
   onToggleVoice,
 }) {
   const [activeTab, setActiveTab] = useState("analyse");
   const [coachStatus, setCoachStatus] = useState("idle"); // idle | loading | done | error
-  const [coachResult, setCoachResult] = useState(null);
   const [coachError, setCoachError] = useState(null);
   const postureHints = getPostureHints(addressPosture);
 
@@ -63,7 +64,7 @@ export default function AnalysisPanel({
       if (!response.ok) {
         throw new Error(data.error || "AI-analyse is mislukt.");
       }
-      setCoachResult(data.analysis);
+      setCoachText(data.analysis);
       setCoachStatus("done");
     } catch (err) {
       setCoachError(err.message || "Er ging iets mis.");
@@ -197,7 +198,7 @@ export default function AnalysisPanel({
                   </button>
                 </>
               )}
-              {coachStatus === "done" && <div className="deep-coach-result">{coachResult}</div>}
+              {coachStatus === "done" && <div className="deep-coach-result">{coachText}</div>}
             </div>
           </>
         )}
