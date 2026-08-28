@@ -3,7 +3,7 @@ import Icon from "./Icon.jsx";
 const NAV_ITEMS = [
   { id: "swing", label: "Swing", icon: "swing", hint: "Upload & analyseer" },
   { id: "stats", label: "Stats", icon: "stats", hint: "Gemeten hoeken" },
-  { id: "history", label: "Historie", icon: "history", hint: "Bewaarde swings" },
+  { id: "history", label: "Hub", icon: "history", hint: "Bewaarde swings" },
   { id: "info", label: "Info", icon: "info", hint: "Hoe het werkt" },
 ];
 

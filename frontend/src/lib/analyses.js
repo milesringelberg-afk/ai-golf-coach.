@@ -34,7 +34,15 @@ async function uploadVideo(client, userId, file) {
  * Mislukt de rij, dan ruimen we de zojuist geüploade video weer op —
  * anders blijft er een weesbestand achter dat wel ruimte kost.
  */
-export async function saveAnalysis({ file, addressPosture, liveMetrics, phases, coach }) {
+export async function saveAnalysis({
+  file,
+  addressPosture,
+  liveMetrics,
+  phases,
+  coach,
+  club,
+  swingScore,
+}) {
   const client = requireClient();
 
   const {
@@ -59,6 +67,8 @@ export async function saveAnalysis({ file, addressPosture, liveMetrics, phases, 
     hip_rotation: liveMetrics?.hipRotation ?? null,
     x_factor: liveMetrics?.xFactor ?? null,
     phases: phases ?? null,
+    club: club ?? null,
+    swing_score: swingScore ?? null,
     coach_root_cause: coach?.rootCause ?? null,
     coach_feel: coach?.feel ?? null,
     coach_prop: coach?.prop ?? null,

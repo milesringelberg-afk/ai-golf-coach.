@@ -85,7 +85,8 @@ export default function AuthScreen() {
           <span className="auth-logo">
             <Icon name="swing" size={22} />
           </span>
-          <h2>{mode === "login" ? "Inloggen" : "Account aanmaken"}</h2>
+          <h2 className="auth-title">Player Hub</h2>
+          <p className="auth-mode">{mode === "login" ? "Inloggen" : "Account aanmaken"}</p>
           <p>
             {mode === "login"
               ? "Log in om je opgeslagen swings te bekijken."

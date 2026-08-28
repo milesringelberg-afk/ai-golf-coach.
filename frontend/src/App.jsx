@@ -12,9 +12,9 @@ import "./App.css";
 const VIEW_TITLES = {
   swing: { title: "Swing analyseren", sub: "Upload je swing en bekijk de herkende houding" },
   stats: { title: "Stats", sub: "Gemeten hoeken uit je laatste swing" },
-  history: { title: "Historie", sub: "Je eerder bewaarde swings" },
+  history: { title: "Player Hub", sub: "Je bewaarde swings, club en houdingsscore" },
   info: { title: "Info", sub: "Hoe deze analyse tot stand komt" },
-  account: { title: "Account", sub: "Inloggen om je swings te bewaren" },
+  account: { title: "Player Hub", sub: "Inloggen om je swings te bewaren" },
 };
 
 export default function App() {

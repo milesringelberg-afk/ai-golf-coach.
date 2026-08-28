@@ -997,6 +997,197 @@
 }
 
 /* ============================================================
+   Houdingsscore
+   ============================================================ */
+
+.hero-score {
+  display: flex;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  animation: fade-in-up 0.5s var(--ease) both;
+}
+
+.hero-score-main {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 28px 34px;
+  background: var(--bg);
+  min-width: 200px;
+}
+
+.hero-score-value {
+  font-family: var(--font-mono);
+  font-size: 4rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.hero-score-aandacht .hero-score-value {
+  color: var(--text);
+}
+
+.hero-score-max {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.hero-score-parts {
+  display: flex;
+  flex: 1;
+  gap: 1px;
+  background: var(--border);
+}
+
+.hero-score-part {
+  flex: 1;
+  min-width: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  padding: 20px 22px;
+  background: var(--bg);
+}
+
+.hero-score-part-label {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+}
+
+.hero-score-part-value {
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.hero-score-note {
+  max-width: 74ch;
+}
+
+/* ============================================================
+   Player Hub — samenvatting
+   ============================================================ */
+
+.hub-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  animation: fade-in-up 0.45s var(--ease) both;
+}
+
+.hub-stat {
+  background: var(--bg);
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hub-stat-value {
+  font-family: var(--font-mono);
+  font-size: 2.1rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.hub-stat-label {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+}
+
+/* ============================================================
+   Club-label + score in de bewaar-balk
+   ============================================================ */
+
+.save-bar-controls {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.save-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 16px;
+  border: 1px solid var(--accent-dim-strong);
+  background: var(--accent-dim);
+}
+
+.save-score-value {
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.save-score-label {
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+}
+
+.save-club {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.club-select {
+  min-width: 150px;
+  padding: 11px 12px;
+  cursor: pointer;
+}
+
+.club-select option,
+.club-select optgroup {
+  background: #0a0a0a;
+  color: var(--text);
+}
+
+.club-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* ============================================================
    Info-weergave
    ============================================================ */
 
@@ -1187,10 +1378,20 @@
   margin-bottom: 18px;
 }
 
-.auth-head h2 {
-  margin: 0 0 10px;
-  font-size: 1.1rem;
-  letter-spacing: 0.08em;
+.auth-title {
+  margin: 0 0 6px;
+  font-size: 1.5rem;
+  letter-spacing: 0.14em;
+}
+
+.auth-mode {
+  margin: 0 0 12px !important;
+  font-family: var(--font-mono);
+  font-size: 0.62rem !important;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--accent) !important;
 }
 
 .auth-head p {
@@ -1379,6 +1580,61 @@
   margin-bottom: 18px;
   padding-bottom: 14px;
   border-bottom: 1px solid var(--border);
+}
+
+.history-head-main {
+  min-width: 0;
+}
+
+.history-labels {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+.history-head-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.history-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 5px 11px;
+  border: 1px solid var(--accent-dim-strong);
+  background: var(--accent-dim);
+}
+
+.history-score-aandacht {
+  border-color: var(--border);
+  background: transparent;
+}
+
+.history-score-value {
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.history-score-aandacht .history-score-value {
+  color: var(--text);
+}
+
+.history-score-label {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
 }
 
 .history-date {

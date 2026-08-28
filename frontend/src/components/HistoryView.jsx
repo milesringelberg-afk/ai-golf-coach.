@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import Icon from "./Icon.jsx";
 import { listAnalyses, deleteAnalysis, getVideoUrl } from "../lib/analyses.js";
 import { friendlyError } from "../lib/supabase.js";
+import { clubLabel } from "../lib/clubs.js";
+import { scoreBand } from "../lib/swingScore.js";
 
 function formatDate(iso) {
   return new Date(iso).toLocaleString("nl-NL", {
@@ -73,19 +75,30 @@ function AnalysisCard({ analysis, onDeleted, index }) {
   return (
     <article className="history-card" style={{ animationDelay: `${index * 60}ms` }}>
       <header className="history-card-head">
-        <div>
-          <p className="history-date">{formatDate(analysis.created_at)}</p>
+        <div className="history-head-main">
+          <div className="history-labels">
+            {analysis.club && <span className="club-tag">{clubLabel(analysis.club)}</span>}
+            <p className="history-date">{formatDate(analysis.created_at)}</p>
+          </div>
           {analysis.video_name && <p className="history-filename">{analysis.video_name}</p>}
         </div>
-        <button
-          type="button"
-          className="history-delete"
-          onClick={handleDelete}
-          disabled={deleting}
-          aria-label="Verwijder deze swing"
-        >
-          <Icon name="trash" size={15} />
-        </button>
+        <div className="history-head-right">
+          {analysis.swing_score != null && (
+            <div className={`history-score history-score-${scoreBand(analysis.swing_score)}`}>
+              <span className="history-score-value">{analysis.swing_score}</span>
+              <span className="history-score-label">Score</span>
+            </div>
+          )}
+          <button
+            type="button"
+            className="history-delete"
+            onClick={handleDelete}
+            disabled={deleting}
+            aria-label="Verwijder deze swing"
+          >
+            <Icon name="trash" size={15} />
+          </button>
+        </div>
       </header>
 
       <div className="history-metrics">
@@ -205,11 +218,39 @@ export default function HistoryView({ onNavigate }) {
     );
   }
 
+  const scored = analyses.filter((a) => a.swing_score != null);
+  const avgScore = scored.length
+    ? Math.round(scored.reduce((sum, a) => sum + a.swing_score, 0) / scored.length)
+    : null;
+  const bestScore = scored.length ? Math.max(...scored.map((a) => a.swing_score)) : null;
+  const clubsUsed = new Set(analyses.filter((a) => a.club).map((a) => a.club)).size;
+
   return (
     <div className="history-view">
-      <p className="tab-hint history-count">
-        {analyses.length} {analyses.length === 1 ? "bewaarde swing" : "bewaarde swings"}
+      <div className="hub-summary">
+        <div className="hub-stat">
+          <span className="hub-stat-value">{analyses.length}</span>
+          <span className="hub-stat-label">Swings</span>
+        </div>
+        <div className="hub-stat">
+          <span className="hub-stat-value">{avgScore ?? "–"}</span>
+          <span className="hub-stat-label">Gem. score</span>
+        </div>
+        <div className="hub-stat">
+          <span className="hub-stat-value">{bestScore ?? "–"}</span>
+          <span className="hub-stat-label">Beste</span>
+        </div>
+        <div className="hub-stat">
+          <span className="hub-stat-value">{clubsUsed || "–"}</span>
+          <span className="hub-stat-label">Clubs</span>
+        </div>
+      </div>
+
+      <p className="stats-disclaimer">
+        De score meet alleen hoe dicht je kniebuiging en rughoek bij onze eigen richtlijnen liggen —
+        bruikbaar om je swings onderling te vergelijken, geen golftechnisch oordeel.
       </p>
+
       <div className="history-grid">
         {analyses.map((analysis, i) => (
           <AnalysisCard

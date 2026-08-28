@@ -1,5 +1,6 @@
 import Icon from "./Icon.jsx";
 import { POSTURE_RANGES } from "../lib/postureHints.js";
+import { computeSwingScore, scoreBand } from "../lib/swingScore.js";
 
 // `band` = grove richtlijn (alleen waar we die ook echt hebben vastgelegd).
 // Voor de rotatiecijfers tonen we bewust géén band: daar hebben we geen
@@ -71,8 +72,34 @@ export default function StatsView({ addressPosture, liveMetrics, onNavigate }) {
     );
   }
 
+  const score = computeSwingScore(addressPosture);
+
   return (
     <div className="stats-view">
+      {score && (
+        <section className="stats-block">
+          <h2 className="section-title">Houdingsscore</h2>
+          <div className={`hero-score hero-score-${scoreBand(score.total)}`}>
+            <div className="hero-score-main">
+              <span className="hero-score-value">{score.total}</span>
+              <span className="hero-score-max">/ 100</span>
+            </div>
+            <div className="hero-score-parts">
+              {score.parts.map((part) => (
+                <div className="hero-score-part" key={part.key}>
+                  <span className="hero-score-part-label">{part.label}</span>
+                  <span className="hero-score-part-value">{part.score}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <p className="score-caption hero-score-note">
+            Gemiddelde van de onderdelen hierboven. Meet hoe dicht je houding bij onze eigen
+            richtlijnen ligt — niet of je swing golftechnisch goed is.
+          </p>
+        </section>
+      )}
+
       {addressPosture && (
         <section className="stats-block">
           <h2 className="section-title">Beginhouding</h2>

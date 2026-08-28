@@ -33,6 +33,13 @@ create table if not exists public.swing_analyses (
   -- Herkende fasetijden, bv. {"address":{"t":0},"top":{"t":0.4}, ...}
   phases jsonb,
 
+  -- Gebruikte club, bv. "i7". Zie frontend/src/lib/clubs.js voor de lijst.
+  club text,
+
+  -- Houdingsscore 0-100 uit frontend/src/lib/swingScore.js.
+  -- Let op: gebaseerd op onze eigen richtlijnen, geen golftechnische norm.
+  swing_score integer,
+
   -- Claude-coachadvies. Blijft leeg zolang er geen ANTHROPIC_API_KEY is.
   coach_root_cause text,
   coach_feel text,
@@ -41,6 +48,11 @@ create table if not exists public.swing_analyses (
 
   note text
 );
+
+-- Kolommen die later zijn toegevoegd. Deze regels zorgen dat het schema ook
+-- bijwerkt als je de tabel al eerder had aangemaakt zonder club/score.
+alter table public.swing_analyses add column if not exists club text;
+alter table public.swing_analyses add column if not exists swing_score integer;
 
 create index if not exists swing_analyses_user_created_idx
   on public.swing_analyses (user_id, created_at desc);
