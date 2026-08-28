@@ -2,6 +2,7 @@ import { useState } from "react";
 import { saveAnalysis } from "../lib/analyses.js";
 import { parseCoachSections } from "../lib/parseCoach.js";
 import { friendlyError } from "../lib/supabase.js";
+import Icon from "./Icon.jsx";
 
 function formatSize(bytes) {
   if (!bytes) return null;
@@ -59,7 +60,7 @@ export default function SaveSwingBar({
     return (
       <div className="save-bar save-bar-done">
         <div className="save-bar-text">
-          <p className="save-bar-title">✅ Swing bewaard</p>
+          <p className="save-bar-title">Swing bewaard</p>
           <p className="save-bar-sub">Je vindt hem terug onder Historie.</p>
         </div>
         <button type="button" className="phase-button" onClick={() => onNavigate("history")}>
@@ -81,7 +82,8 @@ export default function SaveSwingBar({
         </p>
         {error && (
           <p className="alert-chip alert-chip-error">
-            <span>⚠️</span> {error}
+            <Icon name="alert" size={15} />
+            {error}
           </p>
         )}
       </div>
@@ -91,7 +93,7 @@ export default function SaveSwingBar({
         onClick={handleSave}
         disabled={status === "saving"}
       >
-        {status === "saving" ? "Opslaan…" : "Bewaar deze swing"}
+        {status === "saving" ? "Opslaan" : "Bewaar deze swing"}
       </button>
     </div>
   );

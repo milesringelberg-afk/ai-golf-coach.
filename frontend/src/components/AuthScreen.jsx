@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Icon from "./Icon.jsx";
 import { supabase, isSupabaseConfigured, friendlyError } from "../lib/supabase.js";
 
 export default function AuthScreen() {
@@ -11,7 +12,7 @@ export default function AuthScreen() {
   if (!isSupabaseConfigured) {
     return (
       <div className="view-empty">
-        <div className="view-empty-icon">🔌</div>
+        <Icon name="plug" size={32} className="view-empty-icon" />
         <h2>Database nog niet gekoppeld</h2>
         <p>
           Er is nog geen Supabase-project ingesteld, dus inloggen en het bewaren van swings zijn
@@ -55,7 +56,7 @@ export default function AuthScreen() {
   if (status === "check-email") {
     return (
       <div className="view-empty">
-        <div className="view-empty-icon">📬</div>
+        <Icon name="mail" size={32} className="view-empty-icon" />
         <h2>Check je e-mail</h2>
         <p>
           We hebben een bevestigingslink gestuurd naar <strong>{email}</strong>. Klik die aan en kom
@@ -81,7 +82,9 @@ export default function AuthScreen() {
     <div className="auth-wrap">
       <div className="auth-card">
         <div className="auth-head">
-          <span className="auth-logo">⛳</span>
+          <span className="auth-logo">
+            <Icon name="swing" size={22} />
+          </span>
           <h2>{mode === "login" ? "Inloggen" : "Account aanmaken"}</h2>
           <p>
             {mode === "login"
@@ -122,12 +125,13 @@ export default function AuthScreen() {
 
           {error && (
             <p className="alert-chip alert-chip-error">
-              <span>⚠️</span> {error}
+              <Icon name="alert" size={15} />
+              {error}
             </p>
           )}
 
           <button type="submit" className="btn-primary auth-submit" disabled={busy}>
-            {busy ? "Bezig…" : mode === "login" ? "Inloggen" : "Account aanmaken"}
+            {busy ? "Bezig" : mode === "login" ? "Inloggen" : "Account aanmaken"}
           </button>
         </form>
 

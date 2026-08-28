@@ -1,3 +1,4 @@
+import Icon from "./Icon.jsx";
 import { POSTURE_RANGES } from "../lib/postureHints.js";
 
 // `band` = grove richtlijn (alleen waar we die ook echt hebben vastgelegd).
@@ -57,7 +58,7 @@ export default function StatsView({ addressPosture, liveMetrics, onNavigate }) {
   if (!hasAnything) {
     return (
       <div className="view-empty">
-        <div className="view-empty-icon">📊</div>
+        <Icon name="stats" size={32} className="view-empty-icon" />
         <h2>Nog geen metingen</h2>
         <p>
           Upload een swing en speel de video af met "Lichaamshouding tonen" aan. De gemeten hoeken

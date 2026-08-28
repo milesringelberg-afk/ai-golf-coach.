@@ -1,16 +1,7 @@
 import { useState } from "react";
+import Icon from "./Icon.jsx";
 import { speak, isSpeechSupported } from "../lib/speech.js";
 import { getPostureHints } from "../lib/postureHints.js";
-
-const CATEGORY_ICONS = {
-  backswing: "🏌️",
-  balans: "⚖️",
-  "follow-through": "🎯",
-};
-
-function iconFor(category) {
-  return CATEGORY_ICONS[category?.toLowerCase()] ?? "💡";
-}
 
 const PHASE_LABELS = {
   address: "Address",
@@ -21,8 +12,8 @@ const PHASE_LABELS = {
 
 // De losse Stats-tab is verhuisd naar de eigen "Stats"-weergave in de navigatie.
 const TABS = [
-  { id: "analyse", label: "AI Analyse", icon: "🧠" },
-  { id: "verbeterpunten", label: "Verbeterpunten", icon: "💡" },
+  { id: "analyse", label: "AI Analyse", icon: "analysis" },
+  { id: "verbeterpunten", label: "Verbeterpunten", icon: "bulb" },
 ];
 
 function simplifyPhases(phases) {
@@ -75,7 +66,7 @@ export default function AnalysisPanel({
   if (!hasVideo) {
     return (
       <div className="tips-placeholder">
-        <div className="tips-placeholder-icon">🤖</div>
+        <Icon name="analysis" size={30} className="placeholder-icon" />
         <p>Zodra je een swing uploadt, verschijnt hier de AI-analyse.</p>
       </div>
     );
@@ -90,7 +81,8 @@ export default function AnalysisPanel({
             checked={voiceEnabled}
             onChange={(e) => onToggleVoice(e.target.checked)}
           />
-          🔊 Spreek belangrijkste tip uit
+          <Icon name="sound" size={15} />
+          Spreek belangrijkste tip uit
         </label>
       )}
 
@@ -102,7 +94,8 @@ export default function AnalysisPanel({
             className={`tab-button ${activeTab === tab.id ? "tab-button-active" : ""}`}
             onClick={() => setActiveTab(tab.id)}
           >
-            <span>{tab.icon}</span> {tab.label}
+            <Icon name={tab.icon} size={15} />
+            {tab.label}
           </button>
         ))}
       </div>
@@ -177,17 +170,18 @@ export default function AnalysisPanel({
                     onClick={requestDeepAnalysis}
                     disabled={!addressPosture && !liveMetrics}
                   >
-                    🧠 Vraag diepgaande analyse aan
+                    Vraag diepgaande analyse aan
                   </button>
                 </>
               )}
               {coachStatus === "loading" && (
-                <p className="tab-hint">De Master PGA Coach denkt na over je swing…</p>
+                <p className="tab-hint">De Master PGA Coach denkt na over je swing</p>
               )}
               {coachStatus === "error" && (
                 <>
                   <p className="alert-chip alert-chip-error">
-                    <span>⚠️</span> {coachError}
+                    <Icon name="alert" size={15} />
+                    {coachError}
                   </p>
                   <button
                     type="button"
@@ -205,12 +199,11 @@ export default function AnalysisPanel({
 
         {activeTab === "verbeterpunten" &&
           (!coachingTips || coachingTips.length === 0 ? (
-            <p className="tab-hint">Je swing wordt geanalyseerd…</p>
+            <p className="tab-hint">Je swing wordt geanalyseerd</p>
           ) : (
             <ul className="tips-list">
               {coachingTips.map((tip, index) => (
                 <li className="tip-card" key={index} style={{ animationDelay: `${index * 80}ms` }}>
-                  <span className="tip-icon">{iconFor(tip.category)}</span>
                   <div className="tip-card-body">
                     <span className="tip-category">{tip.category}</span>
                     <p>{tip.tip}</p>
@@ -222,7 +215,7 @@ export default function AnalysisPanel({
                       onClick={() => speak(tip.tip)}
                       aria-label="Lees deze tip voor"
                     >
-                      🔊
+                      <Icon name="sound" size={15} />
                     </button>
                   )}
                 </li>

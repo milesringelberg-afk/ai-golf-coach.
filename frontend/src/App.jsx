@@ -5,6 +5,7 @@ import StatsView from "./components/StatsView.jsx";
 import InfoView from "./components/InfoView.jsx";
 import AuthScreen from "./components/AuthScreen.jsx";
 import HistoryView from "./components/HistoryView.jsx";
+import Icon from "./components/Icon.jsx";
 import { supabase, isSupabaseConfigured } from "./lib/supabase.js";
 import "./App.css";
 
@@ -131,7 +132,7 @@ export default function App() {
         {activeView === "history" && (
           <div className="view">
             {!authReady ? (
-              <p className="tab-hint">Even geduld…</p>
+              <p className="tab-hint">Even geduld</p>
             ) : session ? (
               <HistoryView onNavigate={setActiveView} />
             ) : (
@@ -143,10 +144,10 @@ export default function App() {
         {activeView === "account" && (
           <div className="view">
             {!authReady ? (
-              <p className="tab-hint">Even geduld…</p>
+              <p className="tab-hint">Even geduld</p>
             ) : session ? (
               <div className="view-empty">
-                <div className="view-empty-icon">👤</div>
+                <Icon name="user" size={32} className="view-empty-icon" />
                 <h2>Ingelogd</h2>
                 <p>
                   Je bent ingelogd als <strong>{session.user.email}</strong>.

@@ -1,21 +1,23 @@
+import Icon from "./Icon.jsx";
+
 const STEPS = [
   {
-    icon: "🎥",
+    icon: "video",
     title: "Je uploadt een swing",
     body: "De video gaat naar de server en wordt teruggespeeld in de speler. Op de gratis hosting worden video's niet permanent bewaard.",
   },
   {
-    icon: "🦴",
+    icon: "skeleton",
     title: "Je lichaam wordt herkend",
     body: "MediaPipe Pose draait volledig in je eigen browser en volgt punten als schouders, heupen, knieën en polsen — frame voor frame.",
   },
   {
-    icon: "📐",
+    icon: "angle",
     title: "Hoeken worden berekend",
     body: "Uit die punten volgt simpele meetkunde: kniebuiging en rughoek bij address, plus schouder- en heupdraaiing tijdens de swing.",
   },
   {
-    icon: "⏱️",
+    icon: "clock",
     title: "Fases worden geschat",
     body: "Aan de hand van de polshoogte en -snelheid schat de app waar address, top, impact en finish zitten.",
   },
@@ -29,7 +31,9 @@ export default function InfoView() {
         <div className="info-grid">
           {STEPS.map((step, i) => (
             <article className="info-card" key={step.title} style={{ animationDelay: `${i * 60}ms` }}>
-              <span className="info-icon">{step.icon}</span>
+              <span className="info-icon">
+                <Icon name={step.icon} size={19} />
+              </span>
               <h3>{step.title}</h3>
               <p>{step.body}</p>
             </article>

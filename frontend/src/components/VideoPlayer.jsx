@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { PoseLandmarker, DrawingUtils } from "@mediapipe/tasks-vision";
+import Icon from "./Icon.jsx";
 import { getPoseLandmarker } from "../lib/poseLandmarker.js";
 import {
   computeFrameAngles,
@@ -193,7 +194,7 @@ export default function VideoPlayer({
   if (!videoUrl) {
     return (
       <div className="video-placeholder">
-        <div className="video-placeholder-icon">📹</div>
+        <Icon name="video" size={30} className="placeholder-icon" />
         <p>Upload een video om deze hier te bekijken</p>
       </div>
     );
@@ -232,7 +233,7 @@ export default function VideoPlayer({
         {isAnalyzing && (
           <div className="scan-overlay">
             <div className="scan-line" />
-            <span className="scan-text">AI analyseert swing-plane…</span>
+            <span className="scan-text">AI analyseert swing-plane</span>
           </div>
         )}
       </div>
@@ -244,7 +245,7 @@ export default function VideoPlayer({
           onClick={togglePlay}
           aria-label={isPlaying ? "Pauzeer" : "Speel af"}
         >
-          {isPlaying ? "⏸" : "▶"}
+          <Icon name={isPlaying ? "pause" : "play"} size={14} />
         </button>
         <span className="time-display">
           {formatTime(currentTime)} / {formatTime(duration)}
@@ -268,7 +269,7 @@ export default function VideoPlayer({
           onChange={(e) => setOverlayEnabled(e.target.checked)}
         />
         Lichaamshouding tonen
-        {modelStatus === "loading" && " — model laden…"}
+        {modelStatus === "loading" && " — model laden"}
         {modelStatus === "error" && " — analyse kon niet geladen worden"}
       </label>
     </div>

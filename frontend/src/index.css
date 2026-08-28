@@ -1,21 +1,21 @@
 :root {
-  --bg: #09090b;
-  --bg-elevated: #101013;
-  --glass-bg: rgba(255, 255, 255, 0.032);
-  --glass-bg-soft: rgba(255, 255, 255, 0.018);
-  --glass-bg-strong: rgba(255, 255, 255, 0.055);
-  --border: rgba(255, 255, 255, 0.08);
-  --border-soft: rgba(255, 255, 255, 0.05);
+  --bg: #000000;
+  --surface: rgba(255, 255, 255, 0.022);
+  --surface-soft: rgba(255, 255, 255, 0.012);
+  --surface-strong: rgba(255, 255, 255, 0.05);
+  --border: rgba(255, 255, 255, 0.1);
+  --border-soft: rgba(255, 255, 255, 0.06);
   --accent: #ccff00;
-  --accent-dim: rgba(204, 255, 0, 0.12);
-  --accent-dim-strong: rgba(204, 255, 0, 0.22);
-  --accent-ink: #09090b;
-  --text: #fafafa;
-  --text-muted: #8b8b93;
-  --danger: #ff6b6b;
-  --danger-dim: rgba(255, 107, 107, 0.12);
-  --font-display: "Sora", "Segoe UI", system-ui, sans-serif;
-  --font-body: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --accent-dim: rgba(204, 255, 0, 0.1);
+  --accent-dim-strong: rgba(204, 255, 0, 0.28);
+  --accent-ink: #000000;
+  --text: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.48);
+  --danger: #ff4d4d;
+  --danger-dim: rgba(255, 77, 77, 0.1);
+  --font-display: "Syne", "Space Grotesk", system-ui, sans-serif;
+  --font-body: "Space Grotesk", system-ui, -apple-system, sans-serif;
+  --font-mono: "Space Mono", ui-monospace, "SFMono-Regular", monospace;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   color-scheme: dark;
 }
@@ -24,14 +24,17 @@
   box-sizing: border-box;
 }
 
+/* Strak en hoekig: nergens afgeronde hoeken. */
+*,
+*::before,
+*::after {
+  border-radius: 0;
+}
+
 body {
   margin: 0;
   font-family: var(--font-body);
-  background:
-    radial-gradient(900px 480px at 8% -8%, rgba(204, 255, 0, 0.05), transparent 60%),
-    radial-gradient(700px 400px at 100% 0%, rgba(204, 255, 0, 0.025), transparent 55%),
-    var(--bg);
-  background-attachment: fixed;
+  background: var(--bg);
   color: var(--text);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
@@ -41,6 +44,14 @@ h1,
 h2,
 h3 {
   font-family: var(--font-display);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.icon {
+  flex-shrink: 0;
+  display: block;
 }
 
 ::selection {

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Icon from "./Icon.jsx";
 import { listAnalyses, deleteAnalysis, getVideoUrl } from "../lib/analyses.js";
 import { friendlyError } from "../lib/supabase.js";
 
@@ -28,7 +29,8 @@ function CoachOption({ tag, label, text }) {
   return (
     <div className="coach-option">
       <span className="coach-option-tag">
-        {tag} {label}
+        <span className="coach-option-letter">{tag}</span>
+        {label}
       </span>
       <p>{text}</p>
     </div>
@@ -82,7 +84,7 @@ function AnalysisCard({ analysis, onDeleted, index }) {
           disabled={deleting}
           aria-label="Verwijder deze swing"
         >
-          {deleting ? "…" : "🗑"}
+          <Icon name="trash" size={15} />
         </button>
       </header>
 
@@ -96,7 +98,8 @@ function AnalysisCard({ analysis, onDeleted, index }) {
 
       {error && (
         <p className="alert-chip alert-chip-error">
-          <span>⚠️</span> {error}
+          <Icon name="alert" size={15} />
+          {error}
         </p>
       )}
 
@@ -111,12 +114,13 @@ function AnalysisCard({ analysis, onDeleted, index }) {
               onClick={showVideo}
               disabled={videoState === "loading"}
             >
-              {videoState === "loading" ? "Laden…" : "▶ Bekijk video"}
+              {videoState === "loading" ? "Laden" : "Bekijk video"}
             </button>
           )}
           {videoState === "error" && (
             <p className="alert-chip alert-chip-error">
-              <span>⚠️</span> Video kon niet worden geladen.
+              <Icon name="alert" size={15} />
+              Video kon niet worden geladen.
             </p>
           )}
         </div>
@@ -135,13 +139,13 @@ function AnalysisCard({ analysis, onDeleted, index }) {
             <div className="coach-options">
               {analysis.coach_root_cause && (
                 <div className="coach-option coach-option-root">
-                  <span className="coach-option-tag">🔍 Oorzaak</span>
+                  <span className="coach-option-tag">Oorzaak</span>
                   <p>{analysis.coach_root_cause}</p>
                 </div>
               )}
-              <CoachOption tag="🅰️" label="Gevoel" text={analysis.coach_feel} />
-              <CoachOption tag="🅱️" label="Hulpmiddel" text={analysis.coach_prop} />
-              <CoachOption tag="🅲" label="Mentaal" text={analysis.coach_mental} />
+              <CoachOption tag="A" label="Gevoel" text={analysis.coach_feel} />
+              <CoachOption tag="B" label="Hulpmiddel" text={analysis.coach_prop} />
+              <CoachOption tag="C" label="Mentaal" text={analysis.coach_mental} />
             </div>
           )}
         </>
@@ -175,7 +179,7 @@ export default function HistoryView({ onNavigate }) {
   if (error) {
     return (
       <div className="view-empty">
-        <div className="view-empty-icon">⚠️</div>
+        <Icon name="alert" size={32} className="view-empty-icon" />
         <h2>Ophalen mislukt</h2>
         <p>{error}</p>
       </div>
@@ -183,13 +187,13 @@ export default function HistoryView({ onNavigate }) {
   }
 
   if (analyses === null) {
-    return <p className="tab-hint">Je swings worden opgehaald…</p>;
+    return <p className="tab-hint">Je swings worden opgehaald</p>;
   }
 
   if (analyses.length === 0) {
     return (
       <div className="view-empty">
-        <div className="view-empty-icon">📁</div>
+        <Icon name="folder" size={32} className="view-empty-icon" />
         <h2>Nog niets bewaard</h2>
         <p>
           Analyseer een swing en klik daarna op "Bewaar deze swing" om hem hier terug te vinden.

@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import Icon from "./Icon.jsx";
 
 // Houdt het scan-effect minimaal zo lang zichtbaar, ook al is de (mock)
 // analyse vrijwel instant. Zodra hier echte, langduriger AI-verwerking
@@ -86,10 +87,10 @@ export default function VideoUploader({ onVideoSelected, onUploaded, onUploadFai
           onChange={(e) => uploadFile(e.target.files?.[0])}
         />
         <div className="dropzone-icon-ring">
-          <span className="dropzone-icon">{isUploading ? "⏳" : "🎥"}</span>
+          <Icon name="upload" size={22} />
         </div>
         {isUploading ? (
-          <p className="dropzone-title">Bezig met uploaden van "{fileName}"…</p>
+          <p className="dropzone-title">Bezig met uploaden van "{fileName}"</p>
         ) : (
           <>
             <p className="dropzone-title">Sleep je video hierheen of klik om te selecteren</p>
@@ -99,12 +100,14 @@ export default function VideoUploader({ onVideoSelected, onUploaded, onUploadFai
       </div>
       {error && (
         <p className="alert-chip alert-chip-error">
-          <span>⚠️</span> {error}
+          <Icon name="alert" size={15} />
+          {error}
         </p>
       )}
       {fileName && !isUploading && !error && (
         <p className="alert-chip alert-chip-success">
-          <span>✅</span> "{fileName}" geüpload
+          <Icon name="check" size={15} />
+          "{fileName}" geüpload
         </p>
       )}
     </div>

@@ -1,15 +1,19 @@
+import Icon from "./Icon.jsx";
+
 const NAV_ITEMS = [
-  { id: "swing", label: "Swing", icon: "⛳", hint: "Upload & analyseer" },
-  { id: "stats", label: "Stats", icon: "📊", hint: "Gemeten hoeken" },
-  { id: "history", label: "Historie", icon: "📁", hint: "Bewaarde swings" },
-  { id: "info", label: "Info", icon: "ℹ️", hint: "Hoe het werkt" },
+  { id: "swing", label: "Swing", icon: "swing", hint: "Upload & analyseer" },
+  { id: "stats", label: "Stats", icon: "stats", hint: "Gemeten hoeken" },
+  { id: "history", label: "Historie", icon: "history", hint: "Bewaarde swings" },
+  { id: "info", label: "Info", icon: "info", hint: "Hoe het werkt" },
 ];
 
 export default function NavRail({ activeView, onNavigate, hasVideo, session, onSignOut }) {
   return (
     <nav className="nav-rail" aria-label="Hoofdnavigatie">
       <div className="nav-brand">
-        <span className="nav-logo">⛳</span>
+        <span className="nav-logo">
+          <Icon name="swing" size={20} />
+        </span>
         <div className="nav-brand-text">
           <span className="nav-brand-name">Golf Coach</span>
           <span className="nav-brand-badge">Concept</span>
@@ -25,7 +29,7 @@ export default function NavRail({ activeView, onNavigate, hasVideo, session, onS
               onClick={() => onNavigate(item.id)}
               aria-current={activeView === item.id ? "page" : undefined}
             >
-              <span className="nav-item-icon">{item.icon}</span>
+              <Icon name={item.icon} size={17} className="nav-item-icon" />
               <span className="nav-item-body">
                 <span className="nav-item-label">{item.label}</span>
                 <span className="nav-item-hint">{item.hint}</span>
@@ -43,7 +47,7 @@ export default function NavRail({ activeView, onNavigate, hasVideo, session, onS
             onClick={() => onNavigate("account")}
             aria-current={activeView === "account" ? "page" : undefined}
           >
-            <span className="nav-item-icon">{session ? "👤" : "🔑"}</span>
+            <Icon name={session ? "user" : "key"} size={17} className="nav-item-icon" />
             <span className="nav-item-body">
               <span className="nav-item-label">Account</span>
             </span>
@@ -69,7 +73,7 @@ export default function NavRail({ activeView, onNavigate, hasVideo, session, onS
             }`}
             onClick={() => onNavigate("account")}
           >
-            <span className="nav-item-icon">🔑</span>
+            <Icon name="key" size={17} className="nav-item-icon" />
             <span className="nav-item-body">
               <span className="nav-item-label">Inloggen</span>
               <span className="nav-item-hint">Bewaar je swings</span>
