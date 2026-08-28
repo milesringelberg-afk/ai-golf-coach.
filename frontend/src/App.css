@@ -494,6 +494,10 @@
   margin-top: 2px;
 }
 
+.voice-toggle {
+  margin: 0 0 18px;
+}
+
 .tab-bar {
   display: flex;
   gap: 6px;
@@ -604,6 +608,35 @@
   font-size: 1.3rem;
   line-height: 1;
   flex-shrink: 0;
+}
+
+.tip-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.tip-speak-btn {
+  flex-shrink: 0;
+  align-self: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg-soft);
+  color: var(--accent);
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.2s ease;
+}
+
+.tip-speak-btn:hover {
+  background: rgba(74, 222, 128, 0.16);
+  transform: scale(1.08);
+  box-shadow: 0 6px 16px -8px rgba(74, 222, 128, 0.5);
 }
 
 .tip-card p {

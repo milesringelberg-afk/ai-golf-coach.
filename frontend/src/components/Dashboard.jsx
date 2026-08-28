@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import VideoUploader from "./VideoUploader.jsx";
 import VideoPlayer from "./VideoPlayer.jsx";
 import AnalysisPanel from "./AnalysisPanel.jsx";
+import { speak, stopSpeaking } from "../lib/speech.js";
 
 function StepHeading({ step, children }) {
   return (
@@ -22,6 +23,7 @@ export default function Dashboard({
   const [liveMetrics, setLiveMetrics] = useState(null);
   const [phases, setPhases] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
 
   function seekTo(seconds) {
     const v = videoRef.current;
@@ -36,6 +38,7 @@ export default function Dashboard({
         <StepHeading step={1}>Swing uploaden</StepHeading>
         <VideoUploader
           onVideoSelected={(previewUrl) => {
+            stopSpeaking();
             setVideoUrl(previewUrl);
             setCoachingTips([]);
             setIsAnalyzing(true);
@@ -44,6 +47,9 @@ export default function Dashboard({
             setVideoUrl(url);
             setCoachingTips(tips);
             setIsAnalyzing(false);
+            if (voiceEnabled && tips?.[0]?.tip) {
+              speak(tips[0].tip);
+            }
           }}
           onUploadFailed={() => {
             setVideoUrl(null);
@@ -72,6 +78,8 @@ export default function Dashboard({
             liveMetrics={liveMetrics}
             phases={phases}
             onSeek={seekTo}
+            voiceEnabled={voiceEnabled}
+            onToggleVoice={setVoiceEnabled}
           />
         </section>
       </div>

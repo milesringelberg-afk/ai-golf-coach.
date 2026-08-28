@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { speak, isSpeechSupported } from "../lib/speech.js";
 
 const CATEGORY_ICONS = {
   backswing: "🏌️",
@@ -23,7 +24,15 @@ const TABS = [
   { id: "stats", label: "Stats", icon: "📊" },
 ];
 
-export default function AnalysisPanel({ hasVideo, coachingTips, liveMetrics, phases, onSeek }) {
+export default function AnalysisPanel({
+  hasVideo,
+  coachingTips,
+  liveMetrics,
+  phases,
+  onSeek,
+  voiceEnabled,
+  onToggleVoice,
+}) {
   const [activeTab, setActiveTab] = useState("analyse");
 
   if (!hasVideo) {
@@ -37,6 +46,17 @@ export default function AnalysisPanel({ hasVideo, coachingTips, liveMetrics, pha
 
   return (
     <div className="analysis-panel">
+      {isSpeechSupported() && (
+        <label className="overlay-toggle voice-toggle">
+          <input
+            type="checkbox"
+            checked={voiceEnabled}
+            onChange={(e) => onToggleVoice(e.target.checked)}
+          />
+          🔊 Spreek belangrijkste tip uit
+        </label>
+      )}
+
       <div className="tab-bar">
         {TABS.map((tab) => (
           <button
@@ -83,10 +103,20 @@ export default function AnalysisPanel({ hasVideo, coachingTips, liveMetrics, pha
               {coachingTips.map((tip, index) => (
                 <li className="tip-card" key={index} style={{ animationDelay: `${index * 80}ms` }}>
                   <span className="tip-icon">{iconFor(tip.category)}</span>
-                  <div>
+                  <div className="tip-card-body">
                     <span className="tip-category">{tip.category}</span>
                     <p>{tip.tip}</p>
                   </div>
+                  {isSpeechSupported() && (
+                    <button
+                      type="button"
+                      className="tip-speak-btn"
+                      onClick={() => speak(tip.tip)}
+                      aria-label="Lees deze tip voor"
+                    >
+                      🔊
+                    </button>
+                  )}
                 </li>
               ))}
             </ul>
