@@ -148,10 +148,18 @@ export default function App() {
             ) : session ? (
               <div className="view-empty">
                 <Icon name="user" size={32} className="view-empty-icon" />
-                <h2>Ingelogd</h2>
-                <p>
-                  Je bent ingelogd als <strong>{session.user.email}</strong>.
-                </p>
+                <h2>{session.user.is_anonymous ? "Als gast bezig" : "Ingelogd"}</h2>
+                {session.user.is_anonymous ? (
+                  <p>
+                    Je gebruikt de Player Hub als gast. Je swings staan alleen in deze browser op
+                    dit apparaat — wis je je browsergegevens, dan zijn ze weg. Maak een account aan
+                    als je ze wilt bewaren.
+                  </p>
+                ) : (
+                  <p>
+                    Je bent ingelogd als <strong>{session.user.email}</strong>.
+                  </p>
+                )}
                 <button type="button" className="btn-primary" onClick={handleSignOut}>
                   Uitloggen
                 </button>

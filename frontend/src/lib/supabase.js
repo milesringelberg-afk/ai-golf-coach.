@@ -34,6 +34,12 @@ export function friendlyError(error) {
   if (msg.includes("password should be at least")) {
     return "Kies een wachtwoord van minimaal 6 tekens.";
   }
+  if (msg.includes("anonymous sign-ins are disabled") || msg.includes("anonymous_provider_disabled")) {
+    return (
+      "Gast-toegang staat nog uit in Supabase. Zet hem aan onder " +
+      "Authentication -> Sign In / Providers -> Anonymous sign-ins."
+    );
+  }
   if (msg.includes("rate limit") || msg.includes("too many")) {
     return "Te veel pogingen. Wacht even en probeer het opnieuw.";
   }

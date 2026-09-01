@@ -58,8 +58,11 @@ export default function NavRail({ activeView, onNavigate, hasVideo, session, onS
       <div className="nav-account">
         {session ? (
           <>
-            <p className="nav-account-email" title={session.user.email}>
-              {session.user.email}
+            <p
+              className="nav-account-email"
+              title={session.user.is_anonymous ? "Gastsessie" : session.user.email}
+            >
+              {session.user.is_anonymous ? "Gast" : session.user.email}
             </p>
             <button type="button" className="nav-signout" onClick={onSignOut}>
               Uitloggen

@@ -53,6 +53,21 @@ export default function AuthScreen() {
     }
   }
 
+  // Gastsessie: een echte, maar anonieme gebruiker. Krijgt een eigen id, dus
+  // de beveiligingsregels werken precies zoals bij een gewoon account.
+  async function handleGuest() {
+    setError(null);
+    setStatus("busy");
+    try {
+      const { error: guestError } = await supabase.auth.signInAnonymously();
+      if (guestError) throw guestError;
+      setStatus("idle");
+    } catch (err) {
+      setError(friendlyError(err));
+      setStatus("idle");
+    }
+  }
+
   if (status === "check-email") {
     return (
       <div className="view-empty">
@@ -148,6 +163,23 @@ export default function AuthScreen() {
           >
             {mode === "login" ? "Registreren" : "Inloggen"}
           </button>
+        </p>
+
+        <div className="auth-divider">
+          <span>of</span>
+        </div>
+
+        <button
+          type="button"
+          className="phase-button auth-guest"
+          onClick={handleGuest}
+          disabled={busy}
+        >
+          Doorgaan als gast
+        </button>
+        <p className="auth-guest-note">
+          Direct beginnen, zonder e-mailadres. Je swings worden alleen op dit apparaat en in
+          deze browser bewaard — wis je je browsergegevens, dan zijn ze weg.
         </p>
       </div>
     </div>
