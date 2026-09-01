@@ -1162,10 +1162,28 @@
   gap: 7px;
 }
 
-.club-select {
-  min-width: 150px;
-  padding: 11px 12px;
+/* Eigen chevron: de standaard browser-pijl past niet in de strakke look.
+   Bewust met select.-prefix: .field-input zet `background` als shorthand en
+   zou anders (afhankelijk van de vololgorde in dit bestand) de pijl wissen. */
+select.club-select {
+  min-width: 160px;
+  padding: 11px 34px 11px 12px;
   cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: transparent;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23ccff00' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 11px 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.76rem;
+}
+
+select.club-select:focus {
+  border-color: var(--accent);
 }
 
 .club-select option,
