@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Icon from "./Icon.jsx";
 import { speak, isSpeechSupported } from "../lib/speech.js";
 import { getPostureHints } from "../lib/postureHints.js";
+import { CAMERA_ANGLES, getAngleHints } from "../lib/cameraAngles.js";
 
 const PHASE_LABELS = {
   address: "Address",
@@ -29,6 +30,8 @@ export default function AnalysisPanel({
   addressPosture,
   coachText,
   setCoachText,
+  cameraAngle,
+  setCameraAngle,
   onSeek,
   voiceEnabled,
   onToggleVoice,
@@ -36,7 +39,30 @@ export default function AnalysisPanel({
   const [activeTab, setActiveTab] = useState("analyse");
   const [coachStatus, setCoachStatus] = useState("idle"); // idle | loading | done | error
   const [coachError, setCoachError] = useState(null);
+  const [coachAvailable, setCoachAvailable] = useState(false);
+
+  // Alleen tonen als de server een sleutel heeft: anders is het een knop
+  // die met zekerheid een foutmelding oplevert.
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/coach/status")
+      .then((r) => (r.ok ? r.json() : { available: false }))
+      .then((d) => {
+        if (!cancelled) setCoachAvailable(Boolean(d.available));
+      })
+      .catch(() => {
+        if (!cancelled) setCoachAvailable(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   const postureHints = getPostureHints(addressPosture);
+  const angleHints = getAngleHints({
+    cameraAngle,
+    maxSway: liveMetrics?.maxSway,
+    maxSpineChange: liveMetrics?.maxSpineChange,
+  });
 
   async function requestDeepAnalysis() {
     setCoachStatus("loading");
@@ -104,6 +130,48 @@ export default function AnalysisPanel({
         {activeTab === "analyse" && (
           <>
             <div className="posture-section">
+              <p className="posture-section-title">Camerastand</p>
+              <div className="angle-picker">
+                {CAMERA_ANGLES.map((a) => (
+                  <button
+                    key={a.id}
+                    type="button"
+                    className={`angle-option ${cameraAngle === a.id ? "angle-option-active" : ""}`}
+                    onClick={() => setCameraAngle(cameraAngle === a.id ? "" : a.id)}
+                  >
+                    <span className="angle-option-label">{a.label}</span>
+                    <span className="angle-option-hint">{a.hint}</span>
+                  </button>
+                ))}
+              </div>
+
+              {cameraAngle ? (
+                angleHints.length > 0 ? (
+                  <ul className="posture-hints angle-hints">
+                    {angleHints.map((hint) => (
+                      <li className="posture-hint" key={hint.label}>
+                        <span className="posture-hint-label">{hint.label}</span>
+                        <p>{hint.text}</p>
+                        {hint.drill && <p className="posture-hint-drill">{hint.drill}</p>}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="tab-hint angle-hints">
+                    Speel de video af met "Lichaamshouding tonen" aan, dan verschijnt hier de
+                    feedback die bij deze camerastand hoort.
+                  </p>
+                )
+              ) : (
+                <p className="tab-hint angle-hints">
+                  Kies hoe je gefilmd bent. Van voren meet de app je zijwaartse heupbeweging, van
+                  achteren of je je rughoek vasthoudt — dezelfde cijfers betekenen per stand iets
+                  anders.
+                </p>
+              )}
+            </div>
+
+            <div className="posture-section">
               <p className="posture-section-title">Beginhouding (address)</p>
               {addressPosture ? (
                 postureHints.length > 0 ? (
@@ -156,6 +224,7 @@ export default function AnalysisPanel({
               </p>
             )}
 
+            {coachAvailable && (
             <div className="deep-coach-section">
               <p className="posture-section-title">Master PGA Coach (Claude API)</p>
               {coachStatus === "idle" && (
@@ -194,6 +263,7 @@ export default function AnalysisPanel({
               )}
               {coachStatus === "done" && <div className="deep-coach-result">{coachText}</div>}
             </div>
+            )}
           </>
         )}
 

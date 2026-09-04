@@ -30,6 +30,8 @@ export default function Dashboard({
   setAddressPosture,
   coachText,
   setCoachText,
+  cameraAngle,
+  setCameraAngle,
   isAnalyzing,
   setIsAnalyzing,
   voiceEnabled,
@@ -96,6 +98,8 @@ export default function Dashboard({
             addressPosture={addressPosture}
             coachText={coachText}
             setCoachText={setCoachText}
+            cameraAngle={cameraAngle}
+            setCameraAngle={setCameraAngle}
             onSeek={seekTo}
             voiceEnabled={voiceEnabled}
             onToggleVoice={setVoiceEnabled}
@@ -111,6 +115,7 @@ export default function Dashboard({
           liveMetrics={liveMetrics}
           phases={phases}
           coachText={coachText}
+          cameraAngle={cameraAngle}
           onNavigate={onNavigate}
         />
       )}

@@ -7,6 +7,8 @@ import {
   computeLiveMetrics,
   computeWristSpeed,
   computeAddressPosture,
+  computeSway,
+  computeSpineChange,
   detectPhases,
 } from "../lib/swingMetrics.js";
 
@@ -49,6 +51,7 @@ export default function VideoPlayer({
     const framesRef = { current: [] };
     const baselineRef = { current: null };
     const lastUiUpdateRef = { current: 0 };
+    const extremesRef = { current: { maxSway: null, maxSpineChange: null } };
 
     function handleEnded() {
       const detected = detectPhases(framesRef.current);
@@ -102,10 +105,7 @@ export default function VideoPlayer({
 
             const frameAngles = computeFrameAngles(landmarks);
             if (!baselineRef.current) {
-              baselineRef.current = {
-                shoulderAngle: frameAngles.shoulderAngle,
-                hipAngle: frameAngles.hipAngle,
-              };
+              baselineRef.current = frameAngles;
               // Allereerste gedetecteerde frame = address: kniebuiging/rughoek hier vastleggen.
               onAddressPosture(computeAddressPosture(landmarks));
             }
@@ -114,6 +114,20 @@ export default function VideoPlayer({
             const speed = prevFrame
               ? computeWristSpeed(prevFrame.wristMid, prevFrame.t, frameAngles.wristMid, v.currentTime)
               : 0;
+
+            // Grootste uitslag onthouden, niet de laatste: het gaat om hoe ver
+            // je maximaal afwijkt tijdens de swing.
+            const sway = computeSway(baselineRef.current, frameAngles);
+            if (sway != null && Math.abs(sway) > Math.abs(extremesRef.current.maxSway ?? 0)) {
+              extremesRef.current.maxSway = sway;
+            }
+            const spineChange = computeSpineChange(baselineRef.current, frameAngles);
+            if (
+              spineChange != null &&
+              Math.abs(spineChange) > Math.abs(extremesRef.current.maxSpineChange ?? 0)
+            ) {
+              extremesRef.current.maxSpineChange = spineChange;
+            }
 
             framesRef.current.push({
               t: v.currentTime,
@@ -126,7 +140,11 @@ export default function VideoPlayer({
             const now = performance.now();
             if (now - lastUiUpdateRef.current > 120) {
               lastUiUpdateRef.current = now;
-              onLiveMetrics(computeLiveMetrics(baselineRef.current, frameAngles));
+              onLiveMetrics({
+                ...computeLiveMetrics(baselineRef.current, frameAngles),
+                maxSway: extremesRef.current.maxSway,
+                maxSpineChange: extremesRef.current.maxSpineChange,
+              });
             }
           }
         }

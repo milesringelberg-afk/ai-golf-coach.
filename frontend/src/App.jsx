@@ -5,6 +5,7 @@ import StatsView from "./components/StatsView.jsx";
 import InfoView from "./components/InfoView.jsx";
 import AuthScreen from "./components/AuthScreen.jsx";
 import HistoryView from "./components/HistoryView.jsx";
+import UpgradeGuestForm from "./components/UpgradeGuestForm.jsx";
 import Icon from "./components/Icon.jsx";
 import { supabase, isSupabaseConfigured } from "./lib/supabase.js";
 import "./App.css";
@@ -30,6 +31,7 @@ export default function App() {
   const [phases, setPhases] = useState(null);
   const [addressPosture, setAddressPosture] = useState(null);
   const [coachText, setCoachText] = useState(null);
+  const [cameraAngle, setCameraAngle] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
 
@@ -110,6 +112,8 @@ export default function App() {
             setAddressPosture={setAddressPosture}
             coachText={coachText}
             setCoachText={setCoachText}
+            cameraAngle={cameraAngle}
+            setCameraAngle={setCameraAngle}
             isAnalyzing={isAnalyzing}
             setIsAnalyzing={setIsAnalyzing}
             voiceEnabled={voiceEnabled}
@@ -150,11 +154,13 @@ export default function App() {
                 <Icon name="user" size={32} className="view-empty-icon" />
                 <h2>{session.user.is_anonymous ? "Als gast bezig" : "Ingelogd"}</h2>
                 {session.user.is_anonymous ? (
-                  <p>
-                    Je gebruikt de Player Hub als gast. Je swings staan alleen in deze browser op
-                    dit apparaat — wis je je browsergegevens, dan zijn ze weg. Maak een account aan
-                    als je ze wilt bewaren.
-                  </p>
+                  <>
+                    <p>
+                      Je gebruikt de Player Hub als gast. Je swings staan alleen in deze browser op
+                      dit apparaat — wis je je browsergegevens, dan zijn ze weg.
+                    </p>
+                    <UpgradeGuestForm />
+                  </>
                 ) : (
                   <p>
                     Je bent ingelogd als <strong>{session.user.email}</strong>.

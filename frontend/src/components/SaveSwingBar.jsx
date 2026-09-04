@@ -19,6 +19,7 @@ export default function SaveSwingBar({
   liveMetrics,
   phases,
   coachText,
+  cameraAngle,
   onNavigate,
 }) {
   const [status, setStatus] = useState("idle"); // idle | saving | saved | error
@@ -54,6 +55,7 @@ export default function SaveSwingBar({
         coach: parseCoachSections(coachText),
         club: club || null,
         swingScore: score?.total ?? null,
+        cameraAngle: cameraAngle || null,
       });
       setStatus("saved");
     } catch (err) {

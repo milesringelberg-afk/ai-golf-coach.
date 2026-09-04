@@ -22,6 +22,7 @@ create table if not exists public.swing_analyses (
   -- Bewust geen publieke URL: video's worden via signed URLs opgehaald.
   video_path text,
   video_name text,
+  video_size bigint,
 
   -- Gemeten hoeken (graden). Null als ze niet gedetecteerd konden worden.
   knee_flex numeric,
@@ -35,6 +36,9 @@ create table if not exists public.swing_analyses (
 
   -- Gebruikte club, bv. "i7". Zie frontend/src/lib/clubs.js voor de lijst.
   club text,
+
+  -- Camerastand: "face-on" of "dtl". Bepaalt welke metingen zinvol zijn.
+  camera_angle text,
 
   -- Houdingsscore 0-100 uit frontend/src/lib/swingScore.js.
   -- Let op: gebaseerd op onze eigen richtlijnen, geen golftechnische norm.
@@ -53,6 +57,8 @@ create table if not exists public.swing_analyses (
 -- bijwerkt als je de tabel al eerder had aangemaakt zonder club/score.
 alter table public.swing_analyses add column if not exists club text;
 alter table public.swing_analyses add column if not exists swing_score integer;
+alter table public.swing_analyses add column if not exists camera_angle text;
+alter table public.swing_analyses add column if not exists video_size bigint;
 
 create index if not exists swing_analyses_user_created_idx
   on public.swing_analyses (user_id, created_at desc);

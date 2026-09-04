@@ -4,6 +4,8 @@ import { listAnalyses, deleteAnalysis, getVideoUrl } from "../lib/analyses.js";
 import { friendlyError } from "../lib/supabase.js";
 import { clubLabel } from "../lib/clubs.js";
 import { scoreBand } from "../lib/swingScore.js";
+import { angleLabel } from "../lib/cameraAngles.js";
+import CompareStrip from "./CompareStrip.jsx";
 
 function formatDate(iso) {
   return new Date(iso).toLocaleString("nl-NL", {
@@ -39,7 +41,7 @@ function CoachOption({ tag, label, text }) {
   );
 }
 
-function AnalysisCard({ analysis, onDeleted, index }) {
+function AnalysisCard({ analysis, onDeleted, index, selected, onToggleSelect, selectDisabled }) {
   const [videoUrl, setVideoUrl] = useState(null);
   const [videoState, setVideoState] = useState("idle"); // idle | loading | error
   const [expanded, setExpanded] = useState(false);
@@ -78,11 +80,27 @@ function AnalysisCard({ analysis, onDeleted, index }) {
         <div className="history-head-main">
           <div className="history-labels">
             {analysis.club && <span className="club-tag">{clubLabel(analysis.club)}</span>}
+            {analysis.camera_angle && (
+              <span className="angle-tag">{angleLabel(analysis.camera_angle)}</span>
+            )}
             <p className="history-date">{formatDate(analysis.created_at)}</p>
           </div>
           {analysis.video_name && <p className="history-filename">{analysis.video_name}</p>}
         </div>
         <div className="history-head-right">
+          <label
+            className="compare-check"
+            title={
+              selectDisabled ? "Je kunt er twee tegelijk vergelijken" : "Selecteer om te vergelijken"
+            }
+          >
+            <input
+              type="checkbox"
+              checked={selected}
+              disabled={selectDisabled}
+              onChange={() => onToggleSelect(analysis.id)}
+            />
+          </label>
           {analysis.swing_score != null && (
             <div className={`history-score history-score-${scoreBand(analysis.swing_score)}`}>
               <span className="history-score-value">{analysis.swing_score}</span>
@@ -174,6 +192,14 @@ function AnalysisCard({ analysis, onDeleted, index }) {
 export default function HistoryView({ onNavigate }) {
   const [analyses, setAnalyses] = useState(null);
   const [error, setError] = useState(null);
+  const [selectedIds, setSelectedIds] = useState([]);
+
+  // Maximaal twee tegelijk: bij een derde valt de oudste selectie af.
+  function toggleSelect(id) {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id].slice(-2)
+    );
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -225,6 +251,20 @@ export default function HistoryView({ onNavigate }) {
   const bestScore = scored.length ? Math.max(...scored.map((a) => a.swing_score)) : null;
   const clubsUsed = new Set(analyses.filter((a) => a.club).map((a) => a.club)).size;
 
+  const selected = selectedIds
+    .map((id) => analyses.find((a) => a.id === id))
+    .filter(Boolean);
+  // Oudste links, nieuwste rechts: zo lees je het verschil als vooruitgang.
+  const pair =
+    selected.length === 2
+      ? [...selected].sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+      : null;
+
+  const usedBytes = analyses.reduce((sum, a) => sum + (a.video_size || 0), 0);
+  const usedMb = usedBytes / (1024 * 1024);
+  const quotaMb = 1024;
+  const usedPct = Math.min(100, (usedMb / quotaMb) * 100);
+
   return (
     <div className="history-view">
       <div className="hub-summary">
@@ -246,6 +286,27 @@ export default function HistoryView({ onNavigate }) {
         </div>
       </div>
 
+      {usedBytes > 0 && (
+        <div className="storage-meter">
+          <div className="storage-head">
+            <span className="storage-label">Opslag gebruikt</span>
+            <span className="storage-value">
+              {usedMb < 1 ? "<1" : Math.round(usedMb)} MB van {quotaMb / 1024} GB
+            </span>
+          </div>
+          <div className="storage-track">
+            <div className="storage-fill" style={{ width: `${usedPct}%` }} />
+          </div>
+          {usedPct > 80 && (
+            <p className="storage-warn">
+              Je zit tegen de gratis opslaggrens aan. Verwijder een oudere swing om ruimte te maken.
+            </p>
+          )}
+        </div>
+      )}
+
+      {pair && <CompareStrip left={pair[0]} right={pair[1]} onClear={() => setSelectedIds([])} />}
+
       <p className="stats-disclaimer">
         De score meet alleen hoe dicht je kniebuiging en rughoek bij onze eigen richtlijnen liggen —
         bruikbaar om je swings onderling te vergelijken, geen golftechnisch oordeel.
@@ -257,7 +318,13 @@ export default function HistoryView({ onNavigate }) {
             key={analysis.id}
             analysis={analysis}
             index={i}
-            onDeleted={(id) => setAnalyses((prev) => prev.filter((a) => a.id !== id))}
+            selected={selectedIds.includes(analysis.id)}
+            selectDisabled={selectedIds.length >= 2 && !selectedIds.includes(analysis.id)}
+            onToggleSelect={toggleSelect}
+            onDeleted={(id) => {
+              setAnalyses((prev) => prev.filter((a) => a.id !== id));
+              setSelectedIds((prev) => prev.filter((x) => x !== id));
+            }}
           />
         ))}
       </div>

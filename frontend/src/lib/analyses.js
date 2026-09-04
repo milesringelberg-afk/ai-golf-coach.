@@ -42,6 +42,7 @@ export async function saveAnalysis({
   coach,
   club,
   swingScore,
+  cameraAngle,
 }) {
   const client = requireClient();
 
@@ -61,6 +62,7 @@ export async function saveAnalysis({
     user_id: user.id,
     video_path: videoPath,
     video_name: file?.name ?? null,
+    video_size: file?.size ?? null,
     knee_flex: addressPosture?.kneeFlex ?? null,
     spine_angle: addressPosture?.spineAngle ?? null,
     shoulder_rotation: liveMetrics?.shoulderRotation ?? null,
@@ -68,6 +70,7 @@ export async function saveAnalysis({
     x_factor: liveMetrics?.xFactor ?? null,
     phases: phases ?? null,
     club: club ?? null,
+    camera_angle: cameraAngle ?? null,
     swing_score: swingScore ?? null,
     coach_root_cause: coach?.rootCause ?? null,
     coach_feel: coach?.feel ?? null,

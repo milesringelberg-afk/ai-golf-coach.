@@ -63,6 +63,12 @@ function buildUserPrompt({ addressPosture, rotation, phases }) {
   return lines.join("\n");
 }
 
+// Laat de frontend weten of deze functie überhaupt bruikbaar is, zodat er
+// geen knop getoond wordt die gegarandeerd een foutmelding geeft.
+router.get("/status", (req, res) => {
+  res.json({ available: Boolean(getAnthropicClient()) });
+});
+
 router.post("/", async (req, res) => {
   const client = getAnthropicClient();
   if (!client) {

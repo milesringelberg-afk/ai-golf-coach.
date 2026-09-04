@@ -997,6 +997,77 @@
 }
 
 /* ============================================================
+   Camerastand
+   ============================================================ */
+
+.angle-picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.angle-option {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 12px 14px;
+  text-align: left;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition:
+    border-color 0.25s var(--ease),
+    background 0.25s var(--ease),
+    color 0.25s var(--ease);
+}
+
+.angle-option:hover {
+  border-color: var(--accent-dim-strong);
+  color: var(--text);
+}
+
+.angle-option-active,
+.angle-option-active:hover {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+.angle-option-label {
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.angle-option-hint {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  line-height: 1.5;
+  opacity: 0.75;
+}
+
+.angle-hints {
+  margin-top: 12px;
+}
+
+.angle-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border: 1px solid var(--accent-dim-strong);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* ============================================================
    Houdingsscore
    ============================================================ */
 
@@ -1547,6 +1618,23 @@ select.club-select:focus {
 }
 
 /* ============================================================
+   Gast omzetten naar account
+   ============================================================ */
+
+.upgrade-form {
+  width: 100%;
+  max-width: 340px;
+  margin: 4px auto 20px;
+  text-align: left;
+}
+
+.upgrade-result {
+  max-width: 420px;
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+/* ============================================================
    Bewaar-balk
    ============================================================ */
 
@@ -1587,6 +1675,150 @@ select.club-select:focus {
   font-size: 0.7rem;
   color: var(--text-muted);
   line-height: 1.6;
+}
+
+/* ============================================================
+   Vergelijken + opslagmeter
+   ============================================================ */
+
+.compare-check {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.compare-check input {
+  accent-color: var(--accent);
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
+.compare-check input:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.compare-strip {
+  border: 1px solid var(--accent-dim-strong);
+  padding: 22px 24px;
+  animation: fade-in-up 0.4s var(--ease) both;
+}
+
+.compare-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.compare-head .section-title {
+  margin-bottom: 14px;
+}
+
+.compare-table {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+}
+
+.compare-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr 0.7fr;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-soft);
+  align-items: center;
+}
+
+.compare-row:last-child {
+  border-bottom: none;
+}
+
+.compare-row-head {
+  background: var(--surface);
+}
+
+.compare-row-head .compare-value,
+.compare-row-head .compare-delta {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+}
+
+.compare-label {
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+}
+
+.compare-value {
+  font-family: var(--font-mono);
+  font-size: 0.86rem;
+  font-variant-numeric: tabular-nums;
+  text-transform: uppercase;
+}
+
+.compare-delta {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--text-muted);
+}
+
+.delta-up {
+  color: var(--accent);
+}
+
+.delta-down {
+  color: #ff9a4d;
+}
+
+.storage-meter {
+  border: 1px solid var(--border);
+  padding: 16px 18px;
+}
+
+.storage-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.storage-label,
+.storage-value {
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+}
+
+.storage-value {
+  color: var(--text);
+}
+
+.storage-track {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.storage-fill {
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.7s var(--ease);
+}
+
+.storage-warn {
+  margin: 10px 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  line-height: 1.6;
+  color: #ff9a4d;
 }
 
 /* ============================================================

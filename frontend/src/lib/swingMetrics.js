@@ -67,7 +67,45 @@ export function computeFrameAngles(landmarks) {
   const shoulderAngle = lineAngleDegrees(landmarks[LEFT_SHOULDER], landmarks[RIGHT_SHOULDER]);
   const hipAngle = lineAngleDegrees(landmarks[LEFT_HIP], landmarks[RIGHT_HIP]);
   const wristMid = midpoint(landmarks[LEFT_WRIST], landmarks[RIGHT_WRIST]);
-  return { shoulderAngle, hipAngle, wristMid };
+
+  const hipMid = midpoint(landmarks[LEFT_HIP], landmarks[RIGHT_HIP]);
+  const shoulderMid = midpoint(landmarks[LEFT_SHOULDER], landmarks[RIGHT_SHOULDER]);
+
+  // Schouderbreedte als meetlat: zo blijven afstanden vergelijkbaar,
+  // ongeacht hoe ver je van de camera staat.
+  const shoulderWidth = Math.hypot(
+    landmarks[RIGHT_SHOULDER].x - landmarks[LEFT_SHOULDER].x,
+    landmarks[RIGHT_SHOULDER].y - landmarks[LEFT_SHOULDER].y
+  );
+
+  const spineTilt =
+    (Math.atan2(Math.abs(shoulderMid.x - hipMid.x), Math.abs(shoulderMid.y - hipMid.y)) * 180) /
+    Math.PI;
+
+  return { shoulderAngle, hipAngle, wristMid, hipMid, shoulderWidth, spineTilt };
+}
+
+/**
+ * Sway = zijwaartse verschuiving van je heupen t.o.v. address, uitgedrukt in
+ * schouderbreedtes. Zinvol bij een opname van VOREN: daar zie je zijwaartse
+ * beweging goed. Van achteren (down-the-line) betekent dezelfde meting iets
+ * heel anders, dus die tonen we daar niet.
+ */
+export function computeSway(baseline, current) {
+  if (!baseline?.hipMid || !current?.hipMid) return null;
+  const width = current.shoulderWidth || baseline.shoulderWidth;
+  if (!width) return null;
+  return (current.hipMid.x - baseline.hipMid.x) / width;
+}
+
+/**
+ * Behoud van de rughoek: hoeveel graden wijkt je romphoek nu af van je
+ * beginhouding. Zinvol bij een opname van ACHTEREN langs de doellijn, waar
+ * je goed ziet of iemand omhoog komt of juist verder induikt.
+ */
+export function computeSpineChange(baseline, current) {
+  if (baseline?.spineTilt == null || current?.spineTilt == null) return null;
+  return current.spineTilt - baseline.spineTilt;
 }
 
 // Bouwt live statistieken voor het huidige frame t.o.v. de startpositie (address).
