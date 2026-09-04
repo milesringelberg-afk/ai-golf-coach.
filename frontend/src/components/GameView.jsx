@@ -13,6 +13,34 @@ import {
 
 const BEST_KEY = "golfcoach.minigolf.best";
 const TRAIL_LENGTH = 14;
+const STRIPE_H = 26;
+
+// Het spel mag kleuriger zijn dan de rest van de app, maar houdt het
+// accentgroen aan zodat het er nog steeds bij hoort.
+const THEME = {
+  grass: "#0e2a18",
+  grassStripe: "rgba(255,255,255,0.028)",
+
+  water: "#12466e",
+  waterWave: "rgba(150, 210, 255, 0.35)",
+  waterEdge: "#4aa3e0",
+
+  sand: "#c2a35f",
+  sandEdge: "rgba(255, 240, 200, 0.5)",
+
+  wall: "#3d4f43",
+  wallTop: "rgba(255,255,255,0.22)",
+  wallEdge: "rgba(0,0,0,0.45)",
+
+  bumper: "rgba(255, 122, 60, 0.28)",
+  bumperEdge: "#ff7a3c",
+  bumperCore: "rgba(255, 122, 60, 0.55)",
+
+  cup: "#05140b",
+  cupRim: "#ccff00",
+  flagPole: "#e8e8e8",
+  flag: "#ccff00",
+};
 
 function readBest() {
   try {
@@ -125,55 +153,106 @@ export default function GameView() {
     function draw() {
       const s = stateRef.current;
       if (!s) return;
+      const t = performance.now();
 
-      ctx.clearRect(0, 0, FIELD.w, FIELD.h);
-      ctx.fillStyle = "#000000";
+      // Gras met maaibanen, zoals op een echte green.
+      ctx.fillStyle = THEME.grass;
       ctx.fillRect(0, 0, FIELD.w, FIELD.h);
+      ctx.fillStyle = THEME.grassStripe;
+      for (let y = 0; y < FIELD.h; y += STRIPE_H * 2) {
+        ctx.fillRect(0, y, FIELD.w, STRIPE_H);
+      }
 
-      // Water
-      ctx.fillStyle = "rgba(80, 170, 255, 0.16)";
-      ctx.strokeStyle = "rgba(120, 190, 255, 0.5)";
-      ctx.lineWidth = 1;
+      // Water, met een paar golflijntjes die langzaam meebewegen.
       for (const w of hole.water ?? []) {
+        ctx.fillStyle = THEME.water;
         ctx.fillRect(w.x, w.y, w.w, w.h);
-        ctx.strokeRect(w.x + 0.5, w.y + 0.5, w.w - 1, w.h - 1);
-      }
 
-      // Zand
-      ctx.fillStyle = "rgba(255,255,255,0.07)";
-      for (const sand of hole.sand ?? []) ctx.fillRect(sand.x, sand.y, sand.w, sand.h);
-
-      // Muren
-      ctx.fillStyle = "rgba(255,255,255,0.16)";
-      ctx.strokeStyle = "rgba(255,255,255,0.35)";
-      for (const w of hole.walls ?? []) {
-        ctx.fillRect(w.x, w.y, w.w, w.h);
-        ctx.strokeRect(w.x + 0.5, w.y + 0.5, w.w - 1, w.h - 1);
-      }
-
-      // Stuiterpalen
-      for (const b of hole.bumpers ?? []) {
+        ctx.save();
         ctx.beginPath();
-        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(204, 255, 0, 0.12)";
-        ctx.fill();
-        ctx.strokeStyle = "#ccff00";
-        ctx.lineWidth = 2;
-        ctx.stroke();
+        ctx.rect(w.x, w.y, w.w, w.h);
+        ctx.clip();
+        ctx.strokeStyle = THEME.waterWave;
+        ctx.lineWidth = 1;
+        for (let i = 0; i < 4; i++) {
+          const y = w.y + 14 + i * 18 + Math.sin(t / 900 + i) * 3;
+          ctx.beginPath();
+          ctx.moveTo(w.x + 6, y);
+          ctx.lineTo(w.x + w.w - 6, y);
+          ctx.stroke();
+        }
+        ctx.restore();
+
+        ctx.strokeStyle = THEME.waterEdge;
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(w.x + 0.5, w.y + 0.5, w.w - 1, w.h - 1);
       }
 
-      // Gat
+      // Zandbak
+      for (const sand of hole.sand ?? []) {
+        ctx.fillStyle = THEME.sand;
+        ctx.fillRect(sand.x, sand.y, sand.w, sand.h);
+        ctx.strokeStyle = THEME.sandEdge;
+        ctx.lineWidth = 1;
+        ctx.strokeRect(sand.x + 0.5, sand.y + 0.5, sand.w - 1, sand.h - 1);
+      }
+
+      // Muren met een lichtere bovenrand: geeft ze wat hoogte.
+      for (const w of hole.walls ?? []) {
+        ctx.fillStyle = THEME.wall;
+        ctx.fillRect(w.x, w.y, w.w, w.h);
+        ctx.fillStyle = THEME.wallTop;
+        ctx.fillRect(w.x, w.y, w.w, 3);
+        ctx.strokeStyle = THEME.wallEdge;
+        ctx.lineWidth = 1;
+        ctx.strokeRect(w.x + 0.5, w.y + 0.5, w.w - 1, w.h - 1);
+      }
+
+      // Stuiterpalen: oranje, zodat je meteen ziet dat ze iets doen.
+      for (const b of hole.bumpers ?? []) {
+        const puls = 1 + Math.sin(t / 420) * 0.04;
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r * puls, 0, Math.PI * 2);
+        ctx.fillStyle = THEME.bumper;
+        ctx.fill();
+        ctx.strokeStyle = THEME.bumperEdge;
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r * 0.45, 0, Math.PI * 2);
+        ctx.fillStyle = THEME.bumperCore;
+        ctx.fill();
+      }
+
+      // Gat met vlaggenstok
+      const h = hole.hole;
       ctx.beginPath();
-      ctx.arc(hole.hole.x, hole.hole.y, HOLE_R, 0, Math.PI * 2);
-      ctx.fillStyle = "#0a0a0a";
+      ctx.arc(h.x, h.y, HOLE_R, 0, Math.PI * 2);
+      ctx.fillStyle = THEME.cup;
       ctx.fill();
-      ctx.strokeStyle = "#ccff00";
+      ctx.strokeStyle = THEME.cupRim;
       ctx.lineWidth = 2;
       ctx.stroke();
 
+      ctx.beginPath();
+      ctx.moveTo(h.x, h.y);
+      ctx.lineTo(h.x, h.y - 42);
+      ctx.strokeStyle = THEME.flagPole;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      const wapper = Math.sin(t / 500) * 2;
+      ctx.beginPath();
+      ctx.moveTo(h.x, h.y - 42);
+      ctx.lineTo(h.x + 22 + wapper, h.y - 35);
+      ctx.lineTo(h.x, h.y - 27);
+      ctx.closePath();
+      ctx.fillStyle = THEME.flag;
+      ctx.fill();
+
       // Spoor van de bal
       s.trail.forEach((p, i) => {
-        const alpha = ((i + 1) / s.trail.length) * 0.28;
+        const alpha = ((i + 1) / s.trail.length) * 0.3;
         ctx.beginPath();
         ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(255,255,255,${alpha})`;
@@ -203,11 +282,25 @@ export default function GameView() {
         ctx.fillRect(14, FIELD.h - 30, 120 * power, 5);
       }
 
-      // Bal
+      // Bal, met schaduwtje eronder voor wat diepte
+      ctx.beginPath();
+      ctx.ellipse(s.ball.x + 2, s.ball.y + 3, BALL_R * 0.95, BALL_R * 0.7, 0, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(0,0,0,0.35)";
+      ctx.fill();
+
       ctx.beginPath();
       ctx.arc(s.ball.x, s.ball.y, BALL_R, 0, Math.PI * 2);
       ctx.fillStyle = "#ffffff";
       ctx.fill();
+      ctx.beginPath();
+      ctx.arc(s.ball.x - 2, s.ball.y - 2.5, BALL_R * 0.4, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(255,255,255,0.95)";
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(s.ball.x, s.ball.y, BALL_R, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(0,0,0,0.25)";
+      ctx.lineWidth = 1;
+      ctx.stroke();
     }
 
     // Vaste stap van 60 per seconde. Zonder dit rekent de natuurkunde per

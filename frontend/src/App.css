@@ -1333,7 +1333,8 @@ select.club-select:focus {
   position: relative;
   width: 100%;
   max-width: 420px;
-  border: 1px solid var(--border);
+  border: 2px solid #2a3d30;
+  box-shadow: 0 18px 40px -26px rgba(0, 0, 0, 0.9);
 }
 
 .game-canvas {
