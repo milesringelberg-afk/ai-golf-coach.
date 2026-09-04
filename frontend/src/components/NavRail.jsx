@@ -4,6 +4,7 @@ const NAV_ITEMS = [
   { id: "swing", label: "Swing", icon: "swing", hint: "Upload & analyseer" },
   { id: "stats", label: "Stats", icon: "stats", hint: "Gemeten hoeken" },
   { id: "history", label: "Hub", icon: "history", hint: "Bewaarde swings" },
+  { id: "game", label: "Game", icon: "game", hint: "Minigolf" },
   { id: "info", label: "Info", icon: "info", hint: "Hoe het werkt" },
 ];
 

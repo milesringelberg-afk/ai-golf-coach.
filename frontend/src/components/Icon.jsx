@@ -143,6 +143,13 @@ const PATHS = {
       <path d="M3 6h6l2 2h10v11H3z" />
     </>
   ),
+  game: (
+    <>
+      <path d="M7 20h10" />
+      <path d="M12 20V4" />
+      <path d="M12 4l7 2.5L12 9" />
+    </>
+  ),
 };
 
 export default function Icon({ name, size = 18, className = "", strokeWidth = 1.5 }) {

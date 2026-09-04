@@ -6,6 +6,7 @@ import InfoView from "./components/InfoView.jsx";
 import AuthScreen from "./components/AuthScreen.jsx";
 import HistoryView from "./components/HistoryView.jsx";
 import UpgradeGuestForm from "./components/UpgradeGuestForm.jsx";
+import GameView from "./components/GameView.jsx";
 import Icon from "./components/Icon.jsx";
 import { supabase, isSupabaseConfigured } from "./lib/supabase.js";
 import "./App.css";
@@ -14,6 +15,7 @@ const VIEW_TITLES = {
   swing: { title: "Swing analyseren", sub: "Upload je swing en bekijk de herkende houding" },
   stats: { title: "Stats", sub: "Gemeten hoeken uit je laatste swing" },
   history: { title: "Player Hub", sub: "Je bewaarde swings, club en houdingsscore" },
+  game: { title: "Minigolf", sub: "Sleep om te richten, laat los om te slaan" },
   info: { title: "Info", sub: "Hoe deze analyse tot stand komt" },
   account: { title: "Player Hub", sub: "Inloggen om je swings te bewaren" },
 };
@@ -173,6 +175,12 @@ export default function App() {
             ) : (
               <AuthScreen />
             )}
+          </div>
+        )}
+
+        {activeView === "game" && (
+          <div className="view">
+            <GameView />
           </div>
         )}
 
