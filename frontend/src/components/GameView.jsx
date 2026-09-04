@@ -12,6 +12,7 @@ import {
 } from "../lib/golfGame.js";
 
 const BEST_KEY = "golfcoach.minigolf.best";
+const TRAIL_LENGTH = 14;
 
 function readBest() {
   try {
@@ -38,20 +39,35 @@ export default function GameView() {
   const [strokes, setStrokes] = useState(0);
   const [scores, setScores] = useState([]);
   const [status, setStatus] = useState("aiming"); // aiming | rolling | holed | finished
+  const [splash, setSplash] = useState(false);
   const [best, setBest] = useState(readBest);
 
   const hole = COURSE[holeIndex];
 
   // Spelstaat leeft in een ref: de tekenlus mag niet elke frame een
   // re-render veroorzaken.
-  useEffect(() => {
+  function resetBall() {
     stateRef.current = {
       ball: { x: hole.start.x, y: hole.start.y, vx: 0, vy: 0 },
       aim: null,
+      shotFrom: { x: hole.start.x, y: hole.start.y },
+      trail: [],
     };
+  }
+
+  useEffect(() => {
+    resetBall();
     setStrokes(0);
     setStatus("aiming");
-  }, [holeIndex, hole.start.x, hole.start.y]);
+    setSplash(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [holeIndex]);
+
+  function retryHole() {
+    resetBall();
+    setStatus("aiming");
+    setSplash(false);
+  }
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -91,6 +107,8 @@ export default function GameView() {
       const { vx, vy, power } = aimToVelocity(s.ball, s.aim);
       s.aim = null;
       if (power < 0.04) return; // te klein tikje: geldt niet als slag
+      s.shotFrom = { x: s.ball.x, y: s.ball.y };
+      s.trail = [];
       s.ball.vx = vx;
       s.ball.vy = vy;
       setStrokes((n) => n + 1);
@@ -112,17 +130,36 @@ export default function GameView() {
       ctx.fillStyle = "#000000";
       ctx.fillRect(0, 0, FIELD.w, FIELD.h);
 
+      // Water
+      ctx.fillStyle = "rgba(80, 170, 255, 0.16)";
+      ctx.strokeStyle = "rgba(120, 190, 255, 0.5)";
+      ctx.lineWidth = 1;
+      for (const w of hole.water ?? []) {
+        ctx.fillRect(w.x, w.y, w.w, w.h);
+        ctx.strokeRect(w.x + 0.5, w.y + 0.5, w.w - 1, w.h - 1);
+      }
+
       // Zand
       ctx.fillStyle = "rgba(255,255,255,0.07)";
-      for (const sand of hole.sand) ctx.fillRect(sand.x, sand.y, sand.w, sand.h);
+      for (const sand of hole.sand ?? []) ctx.fillRect(sand.x, sand.y, sand.w, sand.h);
 
       // Muren
       ctx.fillStyle = "rgba(255,255,255,0.16)";
       ctx.strokeStyle = "rgba(255,255,255,0.35)";
-      ctx.lineWidth = 1;
-      for (const w of hole.walls) {
+      for (const w of hole.walls ?? []) {
         ctx.fillRect(w.x, w.y, w.w, w.h);
         ctx.strokeRect(w.x + 0.5, w.y + 0.5, w.w - 1, w.h - 1);
+      }
+
+      // Stuiterpalen
+      for (const b of hole.bumpers ?? []) {
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(204, 255, 0, 0.12)";
+        ctx.fill();
+        ctx.strokeStyle = "#ccff00";
+        ctx.lineWidth = 2;
+        ctx.stroke();
       }
 
       // Gat
@@ -133,6 +170,15 @@ export default function GameView() {
       ctx.strokeStyle = "#ccff00";
       ctx.lineWidth = 2;
       ctx.stroke();
+
+      // Spoor van de bal
+      s.trail.forEach((p, i) => {
+        const alpha = ((i + 1) / s.trail.length) * 0.28;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+        ctx.fill();
+      });
 
       // Richtlijn
       if (s.aim) {
@@ -182,9 +228,21 @@ export default function GameView() {
         backlog -= STEP_MS;
         if (!s.ball.vx && !s.ball.vy) continue;
 
-        const next = stepBall(s.ball, hole.hole, hole.walls, hole.sand);
+        const next = stepBall(s.ball, hole.hole, hole);
         s.ball = { x: next.x, y: next.y, vx: next.vx, vy: next.vy };
 
+        s.trail.push({ x: next.x, y: next.y });
+        if (s.trail.length > TRAIL_LENGTH) s.trail.shift();
+
+        if (next.inWater) {
+          // Strafslag: terug naar waar je vandaan sloeg.
+          s.ball = { ...s.shotFrom, vx: 0, vy: 0 };
+          s.trail = [];
+          setStrokes((n) => n + 1);
+          setSplash(true);
+          setStatus("aiming");
+          break;
+        }
         if (next.holed) {
           s.ball.vx = 0;
           s.ball.vy = 0;
@@ -211,6 +269,13 @@ export default function GameView() {
       window.removeEventListener("touchend", onUp);
     };
   }, [hole]);
+
+  // Plons-melding vanzelf laten verdwijnen.
+  useEffect(() => {
+    if (!splash) return;
+    const timer = setTimeout(() => setSplash(false), 1600);
+    return () => clearTimeout(timer);
+  }, [splash]);
 
   function nextHole() {
     const updated = [...scores, strokes];
@@ -259,7 +324,9 @@ export default function GameView() {
           <ol className="game-scorecard">
             {scores.map((s, i) => (
               <li key={i}>
-                <span>Hole {i + 1}</span>
+                <span>
+                  {i + 1}. {COURSE[i].name}
+                </span>
                 <span className="game-scorecard-value">{s}</span>
                 <span className="game-scorecard-name">{scoreName(s, COURSE[i].par)}</span>
               </li>
@@ -297,14 +364,21 @@ export default function GameView() {
         </div>
       </div>
 
+      <p className="game-hole-name">{hole.name}</p>
+
       <div className="game-board">
         <canvas
           ref={canvasRef}
           width={FIELD.w}
           height={FIELD.h}
           className="game-canvas"
-          aria-label="Minigolf baan"
+          aria-label={`Minigolf hole ${holeIndex + 1}: ${hole.name}`}
         />
+
+        {splash && status !== "holed" && (
+          <p className="game-splash">Water — strafslag</p>
+        )}
+
         {status === "holed" && (
           <div className="game-overlay">
             <p className="game-overlay-title">{scoreName(strokes, hole.par)}</p>
@@ -318,9 +392,15 @@ export default function GameView() {
         )}
       </div>
 
+      <div className="game-actions">
+        <button type="button" className="phase-button" onClick={retryHole}>
+          Hole opnieuw
+        </button>
+      </div>
+
       <p className="tab-hint game-help">
         Sleep vanaf de bal naar achteren en laat los — hoe verder je trekt, hoe harder de slag.
-        Muren laten de bal stuiteren, zand remt hem af.
+        Muren en palen laten de bal stuiteren, zand remt hem af, en water kost een strafslag.
       </p>
     </div>
   );
